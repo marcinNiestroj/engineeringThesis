@@ -1,0 +1,130 @@
+﻿@page "/Cars"
+@using ProjektInzynierskiBlazor.Data
+@inject CarService carService
+
+<h3>Pojazdy</h3>
+
+@if (AllCars is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj pojazd</button>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Marka</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Numer rejestracyjny</th>
+                    <th scope="col">Przegląd</th>
+                    <th scope="col">Ubezpieczenie</th>
+                    <th scope="col">Informacje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in AllCars)
+                {
+                    <tr>
+                        <th scope="row">@item.Name</th>
+                        <th scope="row">@item.Model</th>
+                        <th scope="row">@item.RegistrationNumber</th>
+                        <th scope="row">@string.Format("{0:yyyy-MM-dd}", item.Review)</th>
+                        <th scope="row">@string.Format("{0:yyyy-MM-dd}", item.Insurance)</th>
+                        <th scope="row">@item.Informations</th>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (AddDialogOpen)
+    {
+        <AddCar OnClose="@OnAddDialogClose"></AddCar>
+    }
+
+    @if (EditDialogOpen)
+    {
+        <EditCar EditObjId="@carId" OnClose="@OnEditDialogClose"></EditCar>
+    }
+
+    @if (DeleteDialogOpen)
+    {
+        <DeleteCar DeleteObjId="@carId" OnClose="@OnDeleteDialogClose"></DeleteCar>
+    }
+}
+
+@code {
+    public List<Data.Car> AllCars = new List<Data.Car>();
+
+
+    public Data.Car car { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string carId { get; set; }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        carId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            car = await Task.Run(() => carService.GetCarAsync(carId));
+            await carService.DeleteCarAsync(car);
+        }
+
+        DeleteDialogOpen = false;
+        AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        carId = idToDelete;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        StateHasChanged();
+
+    }
+}

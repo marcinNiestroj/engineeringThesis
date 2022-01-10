@@ -1,0 +1,124 @@
+﻿@page "/Locations"
+@using ProjektInzynierskiBlazor.Data
+@inject LocationService locationService
+
+<h3>Lokalizacje</h3>
+
+@if (AllLocations is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj lokalizację</button>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Nazwa</th>
+                    <th scope="col">Skrót nazwy</th>
+                    <th scope="col">Adres</th>
+                    <th scope="col">Informacje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in AllLocations)
+                {
+                    <tr>
+                        <th scope="row">@item.Name</th>
+                        <th scope="row">@item.Shortcut</th>
+                        <th scope="row">@item.Addres</th>
+                        <th scope="row">@item.Informations</th>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (AddDialogOpen)
+    {
+        <AddLocation OnClose="@OnAddDialogClose"></AddLocation>
+    }
+
+    @if (EditDialogOpen)
+    {
+        <EditLocation EditObjId="@locationId" OnClose="@OnEditDialogClose"></EditLocation>
+    }
+
+    @if (DeleteDialogOpen)
+    {
+        <DeleteLocation DeleteObjId="@locationId" OnClose="@OnDeleteDialogClose"></DeleteLocation>
+    }
+}
+
+@code {
+    public List<Data.Location> AllLocations = new List<Location>();
+
+    public Data.Location location { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string locationId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        StateHasChanged();
+    }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        locationId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            location = await Task.Run(() => locationService.GetLocationAsync(locationId));
+            await locationService.DeleteLocationAsync(location);
+        }
+
+        DeleteDialogOpen = false;
+        AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        locationId = idToDelete;
+        StateHasChanged();
+    }
+}

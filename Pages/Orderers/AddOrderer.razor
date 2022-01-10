@@ -1,0 +1,70 @@
+﻿@using ProjektInzynierskiBlazor.Data
+@inject OrdererService ordererService
+
+<div class="modal fade show" id="addModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodaj zleceniodawcę</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Imię i nazwisko</label>
+                                <input form="Name" class="form-control" @bind="@orderer.Name" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Company" class="control-label">Firma</label>
+                                <input form="Company" class="form-control" @bind="@orderer.Company" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Email" class="control-label">Email</label>
+                                <input form="Email" class="form-control" @bind="@orderer.Email" />
+                            </div>
+                            <div class="form-group">
+                                <label for="PhoneNumber" class="control-label">Numer telefonu</label>
+                                <input form="PhoneNumber" class="form-control" @bind="@orderer.PhoneNumber" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Informations" class="control-label">Informacje</label>
+                                <input form="Informations" class="form-control" @bind="@orderer.Informations" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@CreateOrderer" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    Data.Orderer orderer = new Data.Orderer();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void CreateOrderer()
+    {
+        await ordererService.InsertOrdererAsync(orderer);
+        await ModalCancel();
+    }
+}

@@ -1,0 +1,123 @@
+﻿@page "/Orderers"
+@using ProjektInzynierskiBlazor.Data
+@inject OrdererService ordererService
+
+<h3>Zleceniodawcy</h3>
+
+@if (AllOrderes is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj zleceniodawce</button>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Imię i nazwisko</th>
+                    <th scope="col">Firma</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Numer telefonu</th>
+                    <th scope="col">Informacje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in AllOrderes)
+                {
+                <tr>
+                    <th scope="row">@item.Name</th>
+                    <th scope="row">@item.Company</th>
+                    <th scope="row">@item.Email</th>
+                    <th scope="row">@item.PhoneNumber</th>
+                    <th scope="row">@item.Informations</th>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (AddDialogOpen)
+    {
+        <AddOrderer OnClose="@OnAddDialogClose"></AddOrderer>
+    }
+
+    @if (EditDialogOpen)
+    {
+        <EditOrderer EditObjId="@ordererId" OnClose="@OnEditDialogClose"></EditOrderer>
+    }
+
+    @if (DeleteDialogOpen)
+    {
+        <DeleteOrderer DeleteObjId="@ordererId" OnClose="@OnDeleteDialogClose"></DeleteOrderer>
+    }
+}
+
+@code {
+    public List<Data.Orderer> AllOrderes = new List<Data.Orderer>();
+
+    public Data.Orderer orderer { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string ordererId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllOrderes = await Task.Run(() => ordererService.GetAllOrderersAsync());
+    }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllOrderes = await Task.Run(() => ordererService.GetAllOrderersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllOrderes = await Task.Run(() => ordererService.GetAllOrderersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        ordererId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            orderer = await Task.Run(() => ordererService.GetOrdererAsync(ordererId));
+            await ordererService.DeleteOrdererAsync(orderer);
+        }
+
+        DeleteDialogOpen = false;
+        AllOrderes = await Task.Run(() => ordererService.GetAllOrderersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        ordererId = idToDelete;
+        StateHasChanged();
+    }
+}

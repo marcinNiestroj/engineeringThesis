@@ -1,0 +1,75 @@
+﻿@using ProjektInzynierskiBlazor.Data
+@inject CarService carService
+
+<div class="modal fade show" id="addModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodaj pojazd</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Nazwa</label>
+                                <input form="Name" class="form-control" @bind="@car.Name" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Model" class="control-label">Model</label>
+                                <input form="Model" class="form-control" @bind="@car.Model" />
+                            </div>
+                            <div class="form-group">
+                                <label for="RegistrationNumber" class="control-label">Numer rejestracyjny</label>
+                                <input form="RegistrationNumber" class="form-control" @bind="@car.RegistrationNumber" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Review" class="control-label">Przegląd</label>
+                                <input form="Review" class="form-control" type="date" @bind="@car.Review" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Insurance" class="control-label">Ubezpieczenie</label>
+                                <input form="Insurance" class="form-control" type="date" @bind="@car.Insurance" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Informations" class="control-label">Informacje</label>
+                                <input form="Informations" class="form-control" @bind="@car.Informations" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@CreateCar" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>                
+            </div>
+        </div>
+    </div>
+</div> 
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+
+    Data.Car car = new Data.Car();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void CreateCar()
+    {
+        await carService.InsertCarAsync(car);
+        await ModalCancel();
+    }
+}

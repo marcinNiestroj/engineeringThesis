@@ -1,0 +1,66 @@
+﻿@using ProjektInzynierskiBlazor.Data
+@inject LocationService locationService
+
+<div class="modal fade show" id="addModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodaj lokalizację</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Nazwa</label>
+                                <input form="Name" class="form-control" @bind="@location.Name" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Model" class="control-label">Skrót nazwy</label>
+                                <input form="Model" class="form-control" @bind="@location.Shortcut" />
+                            </div>
+                            <div class="form-group">
+                                <label for="RegistrationNumber" class="control-label">Adres</label>
+                                <input form="RegistrationNumber" class="form-control" @bind="@location.Addres" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Informations" class="control-label">Informacje</label>
+                                <input form="Informations" class="form-control" @bind="@location.Informations" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@CreateLocation" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    Data.Location location = new Data.Location();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void CreateLocation()
+    {
+        await locationService.InsertLocationAsync(location);
+        await ModalCancel();
+    }
+}

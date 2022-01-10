@@ -1,0 +1,124 @@
+﻿@page "/Equipments"
+@using ProjektInzynierskiBlazor.Data
+@inject EquipmentService equipmentService
+
+<h3>Wyposażenie</h3>
+
+@if (AllEquipments is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj wyposażenie</button>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Oznaczenie</th>
+                    <th scope="col">Zawartość</th>
+                    <th scope="col">Przegląd</th>
+                    <th scope="col">Informacje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in AllEquipments)
+                {
+                    <tr>
+                        <th scope="row">@item.Number</th>
+                        <th scope="row">@item.Elements</th>
+                        <th scope="row">@string.Format("{0:yyyy-MM-dd}", item.Review)</th>
+                        <th scope="row">@item.Informations</th>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (AddDialogOpen)
+    {
+        <AddEquipment OnClose="@OnAddDialogClose"></AddEquipment>
+    }
+
+    @if (EditDialogOpen)
+    {
+        <EditEquipment EditObjId="@equipmentId" OnClose="@OnEditDialogClose"></EditEquipment>
+    }
+
+    @if (DeleteDialogOpen)
+    {
+        <DeleteEquipment DeleteObjId="@equipmentId" OnClose="@OnDeleteDialogClose"></DeleteEquipment>
+    }
+}
+
+@code {
+    public List<Data.Equipment> AllEquipments = new List<Data.Equipment>();
+
+    public Data.Equipment equipment { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string equipmentId { get; set; }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        equipmentId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            equipment = await Task.Run(() => equipmentService.GetEquipmentAsync(equipmentId));
+            await equipmentService.DeleteEquipmentAsync(equipment);
+        }
+
+        DeleteDialogOpen = false;
+        AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        equipmentId = idToDelete;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
+        StateHasChanged();
+    }
+}
