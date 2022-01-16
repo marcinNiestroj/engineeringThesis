@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ProjektInzynierskiBlazor.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjektInzynierskiBlazor.Data
+namespace ProjektInzynierskiBlazor.Data.Entities
 {
     public class Order
     {
@@ -56,7 +57,7 @@ namespace ProjektInzynierskiBlazor.Data
 
         public Location Location { get; set; }
         public Orderer Orderer { get; set; }
-        public User Employee { get; set; }
+        public Employee Employee { get; set; }
         public Equipment Equipment { get; set; }
         public Car Car { get; set; }
 

@@ -1,0 +1,136 @@
+﻿@page "/Employees"
+@using Microsoft.AspNetCore.Identity;
+@using ProjektInzynierskiBlazor.Data
+@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject EmployeeService employeeService
+
+<h3>Pracownicy</h3>
+
+@if (AllEmployees is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj pracownika</button>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Imię</th>
+                    <th scope="col">Nazwisko</th>
+                    <th scope="col">Adres</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Numer telefonu</th>
+                    <th scope="col">Zatrudniony od</th>
+                    <th scope="col">Zatrudniony do</th>
+                    <th scope="col">Informacje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in AllEmployees)
+                {
+                    <tr>
+                        <th scope="row">@item.FirstName</th>
+                        <th scope="row">@item.LastName</th>
+                        <th scope="row">@item.Addres</th>
+                        <th scope="row">@item.IdentityUser.Email</th>
+                        <th scope="row">@item.IdentityUser.PhoneNumber</th>
+                        <th scope="row">@item.EmployedSince</th>
+                        <th scope="row">@item.EmployedTo</th>
+                        <th scope="row">@item.Informations</th>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (AddDialogOpen)
+    {
+        <AddEmployee OnClose="@OnAddDialogClose"></AddEmployee>
+    }
+
+    @if (EditDialogOpen)
+    {
+        <EditEmployee EditObjId="@employeeId" OnClose="@OnEditDialogClose"></EditEmployee>
+    }
+
+    @if (DeleteDialogOpen)
+    {
+        <DeleteEmployee DeleteObjId="@employeeId" OnClose="@OnDeleteDialogClose"></DeleteEmployee>
+    }
+}
+
+@code {
+    public List<Employee> AllEmployees = new List<Employee>();
+
+    public Employee employee { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string employeeId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        employeeId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            employee = await Task.Run(() => employeeService.GetEmployeeAsync(employeeId));
+            await employeeService.DeleteEmployeeAsync(employee);
+        }
+
+        DeleteDialogOpen = false;
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        employeeId = idToDelete;
+        StateHasChanged();
+    }
+
+}

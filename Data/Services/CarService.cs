@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjektInzynierskiBlazor.Data.Entities;
 
-namespace ProjektInzynierskiBlazor.Data
+namespace ProjektInzynierskiBlazor.Data.Services
 {
     public class CarService
     {

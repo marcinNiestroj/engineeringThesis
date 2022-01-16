@@ -1,0 +1,64 @@
+﻿@using ProjektInzynierskiBlazor.Data
+@using ProjektInzynierskiBlazor.Data.Services
+@using Microsoft.AspNetCore.Identity;
+@inject RolesService rolesService
+
+<div class="modal fade show" id="editModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edytuj role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Nazwa</label>
+                                <input form="Name" class="form-control" @bind="@role.Name" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@UpdateRole" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string EditObjId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    IdentityRole role = new IdentityRole();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void UpdateRole()
+    {
+        await rolesService.UpdateRoleAsync(role);
+        await ModalCancel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        role = await Task.Run(() => rolesService.GetRoleAsync(EditObjId));
+    }
+}

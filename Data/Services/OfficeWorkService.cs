@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjektInzynierskiBlazor.Data.Entities;
 
-namespace ProjektInzynierskiBlazor.Data
+namespace ProjektInzynierskiBlazor.Data.Services
 {
     public class OfficeWorkService
     {
@@ -31,7 +32,7 @@ namespace ProjektInzynierskiBlazor.Data
         }
 
         //Get officeWork by Id
-        public async Task<OfficeWork> GetOfficeWorkAsync(int Id)
+        public async Task<OfficeWork> GetOfficeWorkAsync(string Id)
         {
             OfficeWork officeWork = await _applicationDbContext.OfficeWorks.FirstOrDefaultAsync(x => x.Id.Equals(Id));
             return officeWork;

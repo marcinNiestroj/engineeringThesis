@@ -90,7 +90,7 @@ using ProjektInzynierskiBlazor.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 38 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Shared\NavMenu.razor"
+#line 58 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Shared\NavMenu.razor"
        
     private bool collapseNavMenu = true;
 

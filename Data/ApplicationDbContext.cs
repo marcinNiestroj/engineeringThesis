@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ProjektInzynierskiBlazor.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,6 +20,6 @@ namespace ProjektInzynierskiBlazor.Data
         public DbSet<Car> Cars { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<Location> Locations { get; set; }
-        //public DbSet<User> Users { get; set; }
+        public DbSet<Employee> Employees { get; set; }
     }
 }

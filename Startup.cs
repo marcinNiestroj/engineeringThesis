@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProjektInzynierskiBlazor.Areas.Identity;
 using ProjektInzynierskiBlazor.Data;
+using ProjektInzynierskiBlazor.Data.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,9 @@ namespace ProjektInzynierskiBlazor
             services.AddScoped<LocationService>();
             services.AddScoped<OfficeWorkService>();
             services.AddScoped<OrderService>();
+            services.AddScoped<RolesService>();
+            services.AddScoped<UserService>();
+            services.AddScoped<EmployeeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

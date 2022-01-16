@@ -1,5 +1,7 @@
 ﻿@page "/Locations"
 @using ProjektInzynierskiBlazor.Data
+@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
 @inject LocationService locationService
 
 <h3>Lokalizacje</h3>
@@ -59,9 +61,9 @@ else
 }
 
 @code {
-    public List<Data.Location> AllLocations = new List<Location>();
+    public List<Location> AllLocations = new List<Location>();
 
-    public Data.Location location { get; set; }
+    public Location location { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }

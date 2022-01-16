@@ -1,4 +1,5 @@
-﻿@using ProjektInzynierskiBlazor.Data
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
 @inject EquipmentService equipmentService
 
 <div class="modal fade show" id="deleteModal" role="dialog" style="display:block">
@@ -52,7 +53,7 @@
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    Data.Equipment equipment = new Data.Equipment();
+    Equipment equipment = new Equipment();
 
     private Task ModalCancel()
     {

@@ -1,4 +1,5 @@
-﻿@using ProjektInzynierskiBlazor.Data
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
 @inject LocationService locationService
 
 <div class="modal fade show" id="deleteModal" role="dialog" style="display:block">
@@ -52,7 +53,7 @@
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    Data.Location location = new Data.Location();
+    Location location = new Location();
 
     private Task ModalCancel()
     {

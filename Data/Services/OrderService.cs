@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjektInzynierskiBlazor.Data.Entities;
 
-namespace ProjektInzynierskiBlazor.Data
+namespace ProjektInzynierskiBlazor.Data.Services
 {
     public class OrderService
     {
@@ -31,7 +32,7 @@ namespace ProjektInzynierskiBlazor.Data
         }
 
         //Get order by Id
-        public async Task<Order> GetOrderAsync(int Id)
+        public async Task<Order> GetOrderAsync(string Id)
         {
             Order order = await _applicationDbContext.Orders.FirstOrDefaultAsync(x => x.Id.Equals(Id));
             return order;

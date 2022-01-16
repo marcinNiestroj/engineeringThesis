@@ -20,7 +20,6 @@
   <ItemGroup>
     <Folder Include="Pages\OfficeWorks\" />
     <Folder Include="Pages\Orders\" />
-    <Folder Include="Pages\Users\" />
   </ItemGroup>
 
 </Project>
