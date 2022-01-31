@@ -1,5 +1,5 @@
 ﻿@page "/Orderers"
-@using ProjektInzynierskiBlazor.Data
+@using ProjektInzynierskiBlazor.Data.Services
 @using ProjektInzynierskiBlazor.Data.Entities
 @inject OrdererService ordererService
 
@@ -62,9 +62,9 @@ else
 }
 
 @code {
-    public List<Data.Orderer> AllOrderes = new List<Data.Orderer>();
+    public List<Orderer> AllOrderes = new List<Orderer>();
 
-    public Data.Orderer orderer { get; set; }
+    public Orderer orderer { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }

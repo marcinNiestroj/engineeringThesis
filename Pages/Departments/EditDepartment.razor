@@ -1,0 +1,79 @@
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject DepartmentService departmentService
+
+<div class="modal fade show" id="editModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edytuj oddział</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Nazwa</label>
+                                <input form="Name" class="form-control" @bind="@department.Name" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Address" class="control-label">Adres</label>
+                                <input form="Address" class="form-control" @bind="@department.Address" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Email" class="control-label">Email</label>
+                                <input form="Email" class="form-control" @bind="@department.Email" />
+                            </div>
+                            <div class="form-group">
+                                <label for="PhoneNumer" class="control-label">Numer telefonu</label>
+                                <input form="PhoneNumer" class="form-control" @bind="@department.PhoneNumer" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Informations" class="control-label">Informacje</label>
+                                <input form="Informations" class="form-control" @bind="@department.Informations" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@UpdateDepartment" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string EditObjId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    Department department = new Department();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void UpdateDepartment()
+    {
+        await departmentService.UpdateDepartmentAsync(department);
+        await ModalCancel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        department = await Task.Run(() => departmentService.GetDepartmentAsync(EditObjId));
+    }
+}

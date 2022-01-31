@@ -25,7 +25,7 @@ namespace ProjektInzynierskiBlazor.Data.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Insurance { get; set; }
 
-        public string? Informations { get; set; }
+        public string Informations { get; set; }
 
     }
 }

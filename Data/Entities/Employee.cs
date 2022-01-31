@@ -16,18 +16,22 @@ namespace ProjektInzynierskiBlazor.Data.Entities
 
         public string LastName { get; set; }
 
-        public string Addres { get; set; }
+        public string Address { get; set; }
 
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
 
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd H:mm}", ApplyFormatInEditMode = true)]
-        public DateTime EmployedSince { get; set; }
+        public string DepartmentName { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd H:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime EmployedSince { get; set; }
+
+        public bool IsEmployed { get; set; }
+
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EmployedTo { get; set; }
 
         public string Informations { get; set; }
@@ -35,6 +39,7 @@ namespace ProjektInzynierskiBlazor.Data.Entities
 
 
         public IdentityUser IdentityUser { get; set; }
+        public Department Department { get; set; }
 
     }
 }

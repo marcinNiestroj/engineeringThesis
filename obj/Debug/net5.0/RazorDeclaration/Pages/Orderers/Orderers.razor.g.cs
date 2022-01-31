@@ -84,7 +84,14 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
-using ProjektInzynierskiBlazor.Data;
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
 
 #line default
 #line hidden
@@ -98,11 +105,11 @@ using ProjektInzynierskiBlazor.Data;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 63 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
+#line 64 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
        
-    public List<Data.Orderer> AllOrderes = new List<Data.Orderer>();
+    public List<Orderer> AllOrderes = new List<Orderer>();
 
-    public Data.Orderer orderer { get; set; }
+    public Orderer orderer { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }

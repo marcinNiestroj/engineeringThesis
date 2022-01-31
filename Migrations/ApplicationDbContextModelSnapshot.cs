@@ -219,7 +219,7 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Car", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Car", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -247,12 +247,43 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.ToTable("Cars");
                 });
 
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Department", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Informations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Departments");
+                });
+
             modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Employee", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Addres")
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DepartmentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DepartmentName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -273,6 +304,9 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.Property<string>("Informations")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsEmployed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -281,12 +315,14 @@ namespace ProjektInzynierskiBlazor.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("IdentityUserId");
 
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Equipment", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Equipment", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -308,12 +344,12 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.ToTable("Equipments");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Location", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Location", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Addres")
+                    b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Informations")
@@ -330,10 +366,16 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.OfficeWork", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.OfficeWork", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DepartmentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DepartmentName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmployeeId")
                         .HasColumnType("nvarchar(450)");
@@ -376,6 +418,8 @@ namespace ProjektInzynierskiBlazor.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("OrderId");
@@ -383,7 +427,7 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.ToTable("OfficeWorks");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Order", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Order", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -392,6 +436,12 @@ namespace ProjektInzynierskiBlazor.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CarName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DepartmentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DepartmentName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DoneFrom")
@@ -458,6 +508,8 @@ namespace ProjektInzynierskiBlazor.Migrations
 
                     b.HasIndex("CarId");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("EquipmentId");
@@ -469,7 +521,7 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Orderer", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Orderer", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -547,51 +599,69 @@ namespace ProjektInzynierskiBlazor.Migrations
 
             modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Employee", b =>
                 {
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
                         .WithMany()
                         .HasForeignKey("IdentityUserId");
 
+                    b.Navigation("Department");
+
                     b.Navigation("IdentityUser");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.OfficeWork", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.OfficeWork", b =>
                 {
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
+
                     b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId");
 
-                    b.HasOne("ProjektInzynierskiBlazor.Data.Order", "Order")
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId");
+
+                    b.Navigation("Department");
 
                     b.Navigation("Employee");
 
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Order", b =>
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.Order", b =>
                 {
-                    b.HasOne("ProjektInzynierskiBlazor.Data.Car", "Car")
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Car", "Car")
                         .WithMany()
                         .HasForeignKey("CarId");
+
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
 
                     b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId");
 
-                    b.HasOne("ProjektInzynierskiBlazor.Data.Equipment", "Equipment")
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Equipment", "Equipment")
                         .WithMany()
                         .HasForeignKey("EquipmentId");
 
-                    b.HasOne("ProjektInzynierskiBlazor.Data.Location", "Location")
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
 
-                    b.HasOne("ProjektInzynierskiBlazor.Data.Orderer", "Orderer")
+                    b.HasOne("ProjektInzynierskiBlazor.Data.Entities.Orderer", "Orderer")
                         .WithMany()
                         .HasForeignKey("OrdererId");
 
                     b.Navigation("Car");
+
+                    b.Navigation("Department");
 
                     b.Navigation("Employee");
 

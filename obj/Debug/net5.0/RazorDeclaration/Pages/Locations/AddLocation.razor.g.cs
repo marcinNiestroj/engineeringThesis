@@ -84,7 +84,14 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\AddLocation.razor"
-using ProjektInzynierskiBlazor.Data;
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\AddLocation.razor"
+using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
 #line hidden
@@ -97,12 +104,12 @@ using ProjektInzynierskiBlazor.Data;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 50 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\AddLocation.razor"
+#line 51 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\AddLocation.razor"
        
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    Data.Location location = new Data.Location();
+    Location location = new Location();
 
     private Task ModalCancel()
     {

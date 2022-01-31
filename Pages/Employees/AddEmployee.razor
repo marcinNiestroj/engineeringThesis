@@ -1,74 +1,125 @@
 ﻿@using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
+@using Microsoft.AspNetCore.Identity;
 @inject EmployeeService employeeService
+@inject UserService userService
+@inject DepartmentService departmentService
 
-<div class="modal fade show" id="addModal" role="dialog" style="display:block">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Dodaj pracownika</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="form-group">
-                                <label for="Name" class="control-label">Imię</label>
-                                <input form="Name" class="form-control" @bind="@employee.FirstName" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Model" class="control-label">Nazwisko</label>
-                                <input form="Model" class="form-control" @bind="@employee.LastName" />
-                            </div>
-                            <div class="form-group">
-                                <label for="RegistrationNumber" class="control-label">Adres</label>
-                                <input form="RegistrationNumber" class="form-control" @bind="@employee.Addres" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Informations" class="control-label">Email</label>
-                                <input form="Informations" class="form-control" @bind="@employee.IdentityUser.Email" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Informations" class="control-label">Numer telefonu</label>
-                                <input form="Informations" class="form-control" @bind="@employee.IdentityUser.PhoneNumber" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Informations" class="control-label">Zatrudniony od</label>
-                                <input form="Informations" class="form-control" type="date" @bind="@employee.EmployedSince" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Informations" class="control-label">Zatrudniony do</label>
-                                <input form="Informations" class="form-control" type="date" @bind="@employee.EmployedTo" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Informations" class="control-label">Informacje</label>
-                                <input form="Informations" class="form-control" @bind="@employee.Informations" />
+@if (AllUsers is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <div class="modal fade show" id="addModal" role="dialog" style="display:block">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Dodaj pracownika</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="FirstName" class="control-label">Imię</label>
+                                    <input form="FirstName" class="form-control" @bind="@employee.FirstName" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="LastName" class="control-label">Nazwisko</label>
+                                    <input form="LastName" class="form-control" @bind="@employee.LastName" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="Address" class="control-label">Adres</label>
+                                    <input form="Address" class="form-control" @bind="@employee.Address" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="UserSelect" class="control-label">Wybierz użytkownika</label>
+                                    <div class="form-control-wrapper">
+                                        <select class="form-control-label" @onchange="UserChangeHandler">
+                                            @foreach (var item in AllUsers)
+                                            {
+                                                <option value="@item.Id">@item.UserName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="PhoneNumber" class="control-label">Number telefonu</label>
+                                    @if (_selectedUser is object)
+                                    {
+                                        <label form="PhoneNumber2" class="form-control">@_selectedUser.PhoneNumber</label>
+                                    }
+                                    else
+                                    {
+                                        <label form="PhoneNumber2" class="form-control">Wybierz użytkownika</label>
+                                    }
+                                </div>
+                                <div>
+                                    <label for="DepartmentSelect" class="control-label">Oddział</label>
+                                    <div class="form-control-wrapper">
+                                        <select class="form-control-label" @onchange="DepartmentChangeHandler">
+                                            @foreach (var item in AllDepartments)
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="EmployedSince" class="control-label">Zatrudniony od</label>
+                                    <input form="EmployedSince" class="form-control" type="date" @bind="@employee.EmployedSince" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="IsEmployed" class="control-label">Obecnie zatrudniony</label>
+                                    <div class="form-control-wrapper">
+                                        <select class="form-control-label" @onchange="IsEmployedChangeHandler">
+                                            <option value="yes">Tak</option>
+                                            <option value="no">Nie</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                @if (!employee.IsEmployed)
+                                {
+                                    <div class="form-group">
+                                        <label for="EmployedTo" class="control-label">Zatrudniony do</label>
+                                        <input form="EmployedTo" class="form-control" type="date" @bind="@employee.EmployedTo" />
+                                    </div>
+                                }
+                                <div class="form-group">
+                                    <label for="Informations" class="control-label">Informacje</label>
+                                    <input form="Informations" class="form-control" @bind="@employee.Informations" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <input type="button" class="btn btn-success" @onclick="@CreateEmployee" value="Zapisz" />
-                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+    
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <input type="button" class="btn btn-success" @onclick="@CreateEmployee" value="Zapisz" />
+                                    <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
+}
+    
 @code {
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
+    private List<IdentityUser> AllUsers = new List<IdentityUser>();
+    private List<Department> AllDepartments = new List<Department>();
     Employee employee = new Employee();
+    IdentityUser _selectedUser;
+    Department _selectedDepartment;
 
     private Task ModalCancel()
     {
@@ -81,4 +132,39 @@
         await ModalCancel();
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        StateHasChanged();
+    }
+
+    private async Task UserChangeHandler(ChangeEventArgs args)
+    {
+        _selectedUser = await Task.Run(() => userService.GetUserAsync(args.Value.ToString()));
+        employee.IdentityUser = _selectedUser;
+        StateHasChanged();
+    }
+
+    private async Task DepartmentChangeHandler(ChangeEventArgs args)
+    {
+        _selectedDepartment = await Task.Run(() => departmentService.GetDepartmentAsync(args.Value.ToString()));
+        employee.Department = _selectedDepartment;
+        StateHasChanged();
+    }
+
+    private void IsEmployedChangeHandler(ChangeEventArgs args)
+    {
+        if (args.Value.ToString().Equals("yes"))
+        {
+            employee.IsEmployed = true;
+        }
+        else
+        {
+            employee.IsEmployed = false;
+        }
+        StateHasChanged();
+    }
 }

@@ -82,6 +82,28 @@ using ProjektInzynierskiBlazor.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\Employees.razor"
+using Microsoft.AspNetCore.Identity;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\Employees.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\Employees.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
+    [Microsoft.AspNetCore.Components.RouteAttribute("/Employees")]
     public partial class Employees : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
@@ -89,6 +111,83 @@ using ProjektInzynierskiBlazor.Shared;
         {
         }
         #pragma warning restore 1998
+#nullable restore
+#line 81 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\Employees.razor"
+       
+    public List<Employee> AllEmployees = new List<Employee>();
+    public List<IdentityUser> AllUsers = new List<IdentityUser>();
+    public List<Department> AllDepartments = new List<Department>();
+
+    public Employee employee { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string employeeId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        employeeId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            employee = await Task.Run(() => employeeService.GetEmployeeAsync(employeeId));
+            await employeeService.DeleteEmployeeAsync(employee);
+        }
+
+        DeleteDialogOpen = false;
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        employeeId = idToDelete;
+        StateHasChanged();
+    }
+
+
+#line default
+#line hidden
+#nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private DepartmentService departmentService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private UserService userService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
     }
 }
 #pragma warning restore 1591

@@ -1,0 +1,127 @@
+﻿@page "/Departments"
+@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject DepartmentService departmentService
+
+<h3>Oddziały</h3>
+
+@if (AllDepartments is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj oddział</button>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Nazwa</th>
+                    <th scope="col">Adres</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Numer telefonu</th>
+                    <th scope="col">Informacje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in AllDepartments)
+                {
+                    <tr>
+                        <th scope="row">@item.Name</th>
+                        <th scope="row">@item.Address</th>
+                        <th scope="row">@item.Email</th>
+                        <th scope="row">@item.PhoneNumer</th>
+                        <th scope="row">@item.Informations</th>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (AddDialogOpen)
+    {
+        <AddDepartment OnClose="@OnAddDialogClose"></AddDepartment>
+    }
+
+    @if (EditDialogOpen)
+    {
+        <EditDepartment EditObjId="@departmentId" OnClose="@OnEditDialogClose"></EditDepartment>
+    }
+
+    @if (DeleteDialogOpen)
+    {
+        <DeleteDepartment DeleteObjId="@departmentId" OnClose="@OnDeleteDialogClose"></DeleteDepartment>
+    }
+}
+
+@code {
+    public List<Department> AllDepartments = new List<Department>();
+
+    public Department department { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string departmentId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        StateHasChanged();
+    }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        departmentId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            department = await Task.Run(() => departmentService.GetDepartmentAsync(departmentId));
+            await departmentService.DeleteDepartmentAsync(department);
+        }
+
+        DeleteDialogOpen = false;
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        departmentId = idToDelete;
+        StateHasChanged();
+    }
+}

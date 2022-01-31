@@ -89,6 +89,20 @@ using ProjektInzynierskiBlazor.Data;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Equipments\Equipments.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Equipments\Equipments.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/Equipments")]
     public partial class Equipments : Microsoft.AspNetCore.Components.ComponentBase
     {
@@ -98,11 +112,11 @@ using ProjektInzynierskiBlazor.Data;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 61 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Equipments\Equipments.razor"
+#line 63 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Equipments\Equipments.razor"
        
-    public List<Data.Equipment> AllEquipments = new List<Data.Equipment>();
+    public List<Equipment> AllEquipments = new List<Equipment>();
 
-    public Data.Equipment equipment { get; set; }
+    public Equipment equipment { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }

@@ -82,6 +82,27 @@ using ProjektInzynierskiBlazor.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\DeleteEmployee.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\DeleteEmployee.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\DeleteEmployee.razor"
+using Microsoft.AspNetCore.Identity;
+
+#line default
+#line hidden
+#nullable disable
     public partial class DeleteEmployee : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
@@ -89,6 +110,38 @@ using ProjektInzynierskiBlazor.Shared;
         {
         }
         #pragma warning restore 1998
+#nullable restore
+#line 42 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\DeleteEmployee.razor"
+       
+    [Parameter]
+    public string DeleteObjId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    Employee employee = new Employee();
+    IdentityUser identityUser = new IdentityUser();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(true);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        employee = await Task.Run(() => employeeService.GetEmployeeAsync(DeleteObjId));
+        identityUser = employee.IdentityUser;
+    }
+
+#line default
+#line hidden
+#nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
     }
 }
 #pragma warning restore 1591

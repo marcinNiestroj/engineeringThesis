@@ -82,6 +82,27 @@ using ProjektInzynierskiBlazor.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\EditEmployee.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\EditEmployee.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\EditEmployee.razor"
+using Microsoft.AspNetCore.Identity;
+
+#line default
+#line hidden
+#nullable disable
     public partial class EditEmployee : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
@@ -89,6 +110,56 @@ using ProjektInzynierskiBlazor.Shared;
         {
         }
         #pragma warning restore 1998
+#nullable restore
+#line 97 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\EditEmployee.razor"
+       
+    [Parameter]
+    public string EditObjId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    Employee employee = new Employee();
+    IdentityUser identityUser = new IdentityUser();
+    Department department = new Department();
+
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void UpdateEmployee()
+    {
+        await employeeService.UpdateEmployeeAsync(employee);
+        await ModalCancel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        employee = await Task.Run(() => employeeService.GetEmployeeAsync(EditObjId));
+        identityUser = employee.IdentityUser;
+        department = employee.Department;
+    }
+
+    private void IsEmployedChangeHandler(ChangeEventArgs args)
+    {
+        if (args.Value.ToString().Equals("yes"))
+        {
+            employee.IsEmployed = true;
+        }
+        else
+        {
+            employee.IsEmployed = false;
+        }
+        StateHasChanged();
+    }
+
+#line default
+#line hidden
+#nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private DepartmentService departmentService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
     }
 }
 #pragma warning restore 1591

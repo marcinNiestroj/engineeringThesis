@@ -263,3 +263,11 @@ C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Deb
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Roles\DeleteRole.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Roles\EditRole.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Roles\Roles.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Departments\AddDepartment.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Departments\DeleteDepartment.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Departments\Departments.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Departments\EditDepartment.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Departments\AddDepartment.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Departments\DeleteDepartment.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Departments\Departments.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Departments\EditDepartment.razor.g.cs

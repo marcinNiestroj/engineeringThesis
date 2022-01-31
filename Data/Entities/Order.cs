@@ -36,17 +36,19 @@ namespace ProjektInzynierskiBlazor.Data.Entities
 
         public string OrdererCompany { get; set; }
 
-        public string? OrdererPhone { get; set; }
+        public string OrdererPhone { get; set; }
 
-        public string? OrdererEmail { get; set; }
+        public string OrdererEmail { get; set; }
 
         public string WhatToDo { get; set; }
 
-        public string? Informations { get; set; }
+        public string Informations { get; set; }
+
+        public string DepartmentName { get; set; }
 
         public string FirstEmployeeName { get; set; }
 
-        public string? SecondEmployeeName { get; set; }
+        public string SecondEmployeeName { get; set; }
 
         public string CarName { get; set; }
 
@@ -60,6 +62,6 @@ namespace ProjektInzynierskiBlazor.Data.Entities
         public Employee Employee { get; set; }
         public Equipment Equipment { get; set; }
         public Car Car { get; set; }
-
+        public Department Department { get; set; }
     }
 }

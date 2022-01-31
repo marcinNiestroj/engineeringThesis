@@ -89,6 +89,20 @@ using ProjektInzynierskiBlazor.Data;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/Cars")]
     public partial class Cars : Microsoft.AspNetCore.Components.ComponentBase
     {
@@ -98,12 +112,12 @@ using ProjektInzynierskiBlazor.Data;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 65 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
+#line 67 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
        
-    public List<Data.Car> AllCars = new List<Data.Car>();
+    public List<Car> AllCars = new List<Car>();
 
 
-    public Data.Car car { get; set; }
+    public Car car { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }

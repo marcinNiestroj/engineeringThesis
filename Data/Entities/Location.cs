@@ -15,9 +15,9 @@ namespace ProjektInzynierskiBlazor.Data.Entities
 
         public string Shortcut { get; set; }
 
-        public string Addres { get; set; }
+        public string Address { get; set; }
 
-        public string? Informations { get; set; }
+        public string Informations { get; set; }
 
 
     }

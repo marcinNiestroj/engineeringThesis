@@ -34,13 +34,15 @@ namespace ProjektInzynierskiBlazor.Data.Entities
 
         public string WhatToDo { get; set; }
 
-        public string? Informations { get; set; }
+        public string Informations { get; set; }
+
+        public string DepartmentName { get; set; }
 
         public string EmployeeName { get; set; }
 
 
         public Order Order { get; set; }
         public Employee Employee { get; set; }
-
+        public Department Department { get; set; }
     }
 }

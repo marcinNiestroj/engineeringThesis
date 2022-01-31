@@ -84,7 +84,14 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\DeleteCar.razor"
-using ProjektInzynierskiBlazor.Data;
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\DeleteCar.razor"
+using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
 #line hidden
@@ -97,7 +104,7 @@ using ProjektInzynierskiBlazor.Data;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 56 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\DeleteCar.razor"
+#line 57 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\DeleteCar.razor"
        
     [Parameter]
     public string DeleteObjId { get; set; }
@@ -105,7 +112,7 @@ using ProjektInzynierskiBlazor.Data;
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    Data.Car car = new Data.Car();
+    Car car = new Car();
 
     private Task ModalCancel()
     {
