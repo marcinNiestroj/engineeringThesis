@@ -1,0 +1,155 @@
+﻿@page "/Orders"
+@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject OrderService orderService
+@inject DepartmentService departmentService
+@inject OrdererService ordererService
+@inject LocationService locationService
+@inject EquipmentService equipmentService
+@inject CarService carService
+@inject EmployeeService employeeService
+
+<h3>Zlecenia</h3>
+
+@if (AllEmployees is null)
+{
+    <p><em>Ładowanie...!</em></p>
+}
+else
+{
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj pracownika</button>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Data i godzina</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Czas wykonania</th>
+                    <th scope="col">Obiekt</th>
+                    <th scope="col">Oddział</th>
+                    <th scope="col">Zleceniodawca</th>
+                    <th scope="col">Treść zlecenia</th>
+                    <th scope="col">Informacje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in AllOrders)
+                {
+                <tr>
+                    <th scope="row">
+                        <p>@item.OrderFrom</p>
+                        <p>@item.OrderTo</p>
+                    </th>
+                    <th scope="row">@item.Status</th>
+                    <th scope="row">
+                        <p>@item.DoneFrom</p>
+                        <p>@item.DoneTo</p>
+                    </th>
+                    <th scope="row">@item.Location.Name</th>
+                    <th scope="row">@item.Department.Name</th>
+                    <th scope="row">@item.Orderer.Name</th>
+                    <th scope="row">@item.WhatToDo</th>
+                    <th scope="row">@item.Informations</th>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (AddDialogOpen)
+    {
+        <AddOrder OnClose="@OnAddDialogClose"></AddOrder>
+    }
+
+    @if (EditDialogOpen)
+    {
+        @*<EditOrder EditObjId="@orderId" OnClose="@OnEditDialogClose"></EditOrder>*@
+    }
+
+    @if (DeleteDialogOpen)
+    {
+        <DeleteOrder DeleteObjId="@orderId" OnClose="@OnDeleteDialogClose"></DeleteOrder>
+    }
+}
+
+@code {
+    public List<Order> AllOrders = new List<Order>();
+    public List<Employee> AllEmployees = new List<Employee>();
+    public List<Department> AllDepartments = new List<Department>();
+    public List<Orderer> AllOrderers = new List<Orderer>();
+    public List<Equipment> AllEquipments = new List<Equipment>();
+    public List<Car> AllCars = new List<Car>();
+
+    public Order order { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string orderId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        AllOrderers = await Task.Run(() => ordererService.GetAllOrderersAsync());
+        AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
+        AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        StateHasChanged();
+    }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        orderId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            order = await Task.Run(() => orderService.GetOrderAsync(orderId));
+            await orderService.DeleteOrderAsync(order);
+        }
+
+        DeleteDialogOpen = false;
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        orderId = idToDelete;
+        StateHasChanged();
+    }
+}

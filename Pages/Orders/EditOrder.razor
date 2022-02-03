@@ -1,0 +1,148 @@
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject OrderService orderService
+@inject DepartmentService departmentService
+@inject OrdererService ordererService
+@inject LocationService locationService
+@inject EquipmentService equipmentService
+@inject CarService carService
+@inject EmployeeService employeeService
+
+<div class="modal fade show" id="editModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edytuj lokalizację</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="FirstName" class="control-label">Imię</label>
+                                <input form="FirstName" class="form-control" @bind="@employee.FirstName" />
+                            </div>
+                            <div class="form-group">
+                                <label for="LastName" class="control-label">nazwisko</label>
+                                <input form="LastName" class="form-control" @bind="@employee.LastName" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Address" class="control-label">Adres</label>
+                                <input form="Address" class="form-control" @bind="@employee.Address" />
+                            </div>
+                            @*<div class="form-group">
+                                <label for="Email" class="control-label">Email</label>
+                                <label form="Email2" class="form-control">@identityUser.Email</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="PhoneNumber" class="control-label">Numer telefonu</label>
+                                <label form="PhoneNumber2" class="form-control">@identityUser.PhoneNumber</label>
+                            </div>*@
+                            <div class="form-group">
+                                <label for="DepartmentName" class="control-label">Oddział</label>
+                                <label form="DepartmentName2" class="form-control">@department.Name</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="EmployedSince" class="control-label">Zatrudniony od</label>
+                                <input form="EmployedSince" class="form-control" type="date" @bind="@employee.EmployedSince" />
+                            </div>
+                            <div>
+                                <label for="IsEmployed" class="control-label">Obecnie zatrudniony</label>
+                                @if (employee.IsEmployed)
+                                {
+                                    <div class="form-control-wrapper">
+                                        <select class="form-control-label" @onchange="IsEmployedChangeHandler">
+                                            <option value="yes">Tak</option>
+                                            <option value="no">Nie</option>
+                                        </select>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-control-wrapper">
+                                        <select class="form-control-label" @onchange="IsEmployedChangeHandler">
+                                            <option value="no">Nie</option>
+                                            <option value="yes">Tak</option>
+                                        </select>
+                                    </div>
+                                }
+                            </div>
+                            @if (!employee.IsEmployed)
+                            {
+                                <div class="form-group">
+                                    <label for="EmployedTo" class="control-label">Zatrudniony do</label>
+                                    <input form="EmployedTo" class="form-control" type="date" @bind="@employee.EmployedTo" />
+                                </div>
+                            }
+                            <div class="form-group">
+                                <label for="Informations" class="control-label">Informacje</label>
+                                <input form="Informations" class="form-control" @bind="@employee.Informations" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@UpdateOrder" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string EditObjId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    Order order = new Order();
+    Department department = new Department();
+    Orderer orderer = new Orderer();
+    Location location = new Location();
+    Equipment equipment = new Equipment();
+    Car car = new Car();
+    Employee employee = new Employee();
+
+
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void UpdateOrder()
+    {
+        await orderService.UpdateOrderAsync(order);
+        await ModalCancel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = await Task.Run(() => orderService.GetOrderAsync(EditObjId));
+
+        department = employee.Department;
+    }
+
+    private void IsEmployedChangeHandler(ChangeEventArgs args)
+    {
+        if (args.Value.ToString().Equals("yes"))
+        {
+            employee.IsEmployed = true;
+        }
+        else
+        {
+            employee.IsEmployed = false;
+        }
+        StateHasChanged();
+    }
+}

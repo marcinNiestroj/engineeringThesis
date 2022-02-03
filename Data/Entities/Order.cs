@@ -30,7 +30,7 @@ namespace ProjektInzynierskiBlazor.Data.Entities
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd H:mm}", ApplyFormatInEditMode = true)]
         public DateTime? DoneTo { get; set; }
 
-        public string LocationName { get; set; }
+        public string LocationName { get => Location.Name; set; }
 
         public string OrdererName { get; set; }
 
@@ -59,8 +59,10 @@ namespace ProjektInzynierskiBlazor.Data.Entities
 
         public Location Location { get; set; }
         public Orderer Orderer { get; set; }
-        public Employee Employee { get; set; }
-        public Equipment Equipment { get; set; }
+        public Employee FirstEmployee { get; set; }
+        public Employee SecondEmployee { get; set; }
+        public Equipment FirstEquipment { get; set; }
+        public Equipment SecondEquipment { get; set; }
         public Car Car { get; set; }
         public Department Department { get; set; }
     }

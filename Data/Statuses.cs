@@ -7,10 +7,10 @@ namespace ProjektInzynierskiBlazor.Data
 {
     public enum Statuses
     {
-        Ordered,
-        Done,
-        PartialDone,
-        Canceled,
-        Delayed
+        Zlecone,
+        Wykonane,
+        Częściowo_wykonane,
+        Odwołane,
+        Opóźnione
     }
 }
