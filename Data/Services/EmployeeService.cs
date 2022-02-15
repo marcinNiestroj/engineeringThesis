@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjektInzynierskiBlazor.Data.Entities;
 
@@ -35,6 +36,13 @@ namespace ProjektInzynierskiBlazor.Data.Services
         public async Task<Employee> GetEmployeeAsync(string Id)
         {
             Employee employee = await _applicationDbContext.Employees.FirstOrDefaultAsync(x => x.Id.Equals(Id));
+            return employee;
+        }
+
+        //Get employee by User
+        public async Task<Employee> GetEmployeeByUserAsync(IdentityUser identityUser)
+        {
+            Employee employee = await _applicationDbContext.Employees.FirstOrDefaultAsync(x => x.IdentityUser.Id.Equals(identityUser.Id));
             return employee;
         }
 

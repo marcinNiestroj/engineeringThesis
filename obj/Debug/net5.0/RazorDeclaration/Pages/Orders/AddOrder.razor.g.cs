@@ -104,10 +104,13 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 218 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\AddOrder.razor"
+#line 200 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\AddOrder.razor"
        
-        [Parameter]
-        public EventCallback<bool> OnClose { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public DateTime OrderFromDate { get; set; }
+    public DateTime OrderFromTime { get; set; }
 
     private List<Department> AllDepartments = new List<Department>();
     private List<Orderer> AllOrderers = new List<Orderer>();
@@ -219,6 +222,7 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         StateHasChanged();
     }
+
 
 #line default
 #line hidden

@@ -105,19 +105,20 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 82 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\Orders.razor"
+#line 90 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\Orders.razor"
        
-    public List<Order> AllOrders = new List<Order>();
-    public List<Employee> AllEmployees = new List<Employee>();
-    public List<Department> AllDepartments = new List<Department>();
-    public List<Orderer> AllOrderers = new List<Orderer>();
-    public List<Equipment> AllEquipments = new List<Equipment>();
-    public List<Car> AllCars = new List<Car>();
+    private List<Order> AllOrders = new List<Order>();
+    private List<Employee> AllEmployees = new List<Employee>();
+    private List<Department> AllDepartments = new List<Department>();
+    private List<Orderer> AllOrderers = new List<Orderer>();
+    private List<Equipment> AllEquipments = new List<Equipment>();
+    private List<Car> AllCars = new List<Car>();
 
     public Order order { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
+    public bool DetailsDialogOpen { get; set; }
     public string orderId { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -157,6 +158,20 @@ using ProjektInzynierskiBlazor.Data.Services;
     {
         EditDialogOpen = true;
         orderId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDetailsDialogClose(bool accepted)
+    {
+        DetailsDialogOpen = false;
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDetailsDialog(string id)
+    {
+        DetailsDialogOpen = true;
+        orderId = id;
         StateHasChanged();
     }
 

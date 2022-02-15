@@ -283,12 +283,6 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.Property<string>("DepartmentId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DepartmentName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EmployedSince")
                         .HasColumnType("datetime2");
 
@@ -308,9 +302,6 @@ namespace ProjektInzynierskiBlazor.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -374,14 +365,8 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.Property<string>("DepartmentId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DepartmentName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("EmployeeId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("EmployeeName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("From")
                         .HasColumnType("datetime2");
@@ -389,23 +374,8 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.Property<string>("Informations")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LocationShortcut")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("OrdererCompany")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrdererEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrdererName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrdererPhone")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -435,14 +405,8 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.Property<string>("CarId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CarName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DepartmentId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("DepartmentName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DoneFrom")
                         .HasColumnType("datetime2");
@@ -453,12 +417,6 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.Property<string>("FirstEmployeeId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("FirstEmployeeName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstEqiupmentNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FirstEquipmentId")
                         .HasColumnType("nvarchar(450)");
 
@@ -468,38 +426,17 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.Property<string>("LocationId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("LocationName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("OrderFrom")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("OrderTo")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("OrdererCompany")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrdererEmail")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("OrdererId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("OrdererName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrdererPhone")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SecondEmployeeId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SecondEmployeeName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SecondEqiupmentNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondEquipmentId")
                         .HasColumnType("nvarchar(450)");
@@ -554,6 +491,25 @@ namespace ProjektInzynierskiBlazor.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Orderers");
+                });
+
+            modelBuilder.Entity("ProjektInzynierskiBlazor.Data.Entities.RolesAccess", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccessString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RolesAccesses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

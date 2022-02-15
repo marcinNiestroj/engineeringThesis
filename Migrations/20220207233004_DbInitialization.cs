@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ProjektInzynierskiBlazor.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class DbInitialization : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -64,6 +64,22 @@ namespace ProjektInzynierskiBlazor.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Departments",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumer = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Informations = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Equipments",
                 columns: table => new
                 {
@@ -85,7 +101,7 @@ namespace ProjektInzynierskiBlazor.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Shortcut = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Addres = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Informations = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -107,6 +123,20 @@ namespace ProjektInzynierskiBlazor.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orderers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RolesAccesses",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UrlAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccessString = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RolesAccesses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,13 +252,13 @@ namespace ProjektInzynierskiBlazor.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Addres = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmployedSince = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsEmployed = table.Column<bool>(type: "bit", nullable: false),
                     EmployedTo = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Informations = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DepartmentId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -237,6 +267,12 @@ namespace ProjektInzynierskiBlazor.Migrations
                         name: "FK_Employees_AspNetUsers_IdentityUserId",
                         column: x => x.IdentityUserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Employees_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -251,23 +287,16 @@ namespace ProjektInzynierskiBlazor.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     DoneFrom = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DoneTo = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LocationName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererCompany = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WhatToDo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Informations = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FirstEmployeeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecondEmployeeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CarName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FirstEqiupmentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecondEqiupmentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LocationId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     OrdererId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EquipmentId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CarId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    FirstEmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SecondEmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FirstEquipmentId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SecondEquipmentId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CarId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DepartmentId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -279,14 +308,32 @@ namespace ProjektInzynierskiBlazor.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Orders_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_Orders_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Employees_FirstEmployeeId",
+                        column: x => x.FirstEmployeeId,
                         principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Orders_Equipments_EquipmentId",
-                        column: x => x.EquipmentId,
+                        name: "FK_Orders_Employees_SecondEmployeeId",
+                        column: x => x.SecondEmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Equipments_FirstEquipmentId",
+                        column: x => x.FirstEquipmentId,
+                        principalTable: "Equipments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Equipments_SecondEquipmentId",
+                        column: x => x.SecondEquipmentId,
                         principalTable: "Equipments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -312,20 +359,21 @@ namespace ProjektInzynierskiBlazor.Migrations
                     From = table.Column<DateTime>(type: "datetime2", nullable: false),
                     To = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    LocationShortcut = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererCompany = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrdererEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WhatToDo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Informations = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmployeeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OrderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DepartmentId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OfficeWorks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OfficeWorks_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_OfficeWorks_Employees_EmployeeId",
                         column: x => x.EmployeeId,
@@ -380,9 +428,19 @@ namespace ProjektInzynierskiBlazor.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_DepartmentId",
+                table: "Employees",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_IdentityUserId",
                 table: "Employees",
                 column: "IdentityUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OfficeWorks_DepartmentId",
+                table: "OfficeWorks",
+                column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OfficeWorks_EmployeeId",
@@ -400,14 +458,19 @@ namespace ProjektInzynierskiBlazor.Migrations
                 column: "CarId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_EmployeeId",
+                name: "IX_Orders_DepartmentId",
                 table: "Orders",
-                column: "EmployeeId");
+                column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_EquipmentId",
+                name: "IX_Orders_FirstEmployeeId",
                 table: "Orders",
-                column: "EquipmentId");
+                column: "FirstEmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_FirstEquipmentId",
+                table: "Orders",
+                column: "FirstEquipmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_LocationId",
@@ -418,6 +481,16 @@ namespace ProjektInzynierskiBlazor.Migrations
                 name: "IX_Orders_OrdererId",
                 table: "Orders",
                 column: "OrdererId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_SecondEmployeeId",
+                table: "Orders",
+                column: "SecondEmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_SecondEquipmentId",
+                table: "Orders",
+                column: "SecondEquipmentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -439,6 +512,9 @@ namespace ProjektInzynierskiBlazor.Migrations
 
             migrationBuilder.DropTable(
                 name: "OfficeWorks");
+
+            migrationBuilder.DropTable(
+                name: "RolesAccesses");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -463,6 +539,9 @@ namespace ProjektInzynierskiBlazor.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Departments");
         }
     }
 }

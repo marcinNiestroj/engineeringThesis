@@ -22,5 +22,6 @@ namespace ProjektInzynierskiBlazor.Data
         public DbSet<Location> Locations { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<RolesAccess> RolesAccesses { get; set; }
     }
 }

@@ -1,0 +1,85 @@
+﻿@using ProjektInzynierskiBlazor.Data.Services
+@using Microsoft.AspNetCore.Identity;
+@inject UserRolesService userRolesService
+@inject RolesService rolesService
+@inject UserService userService
+
+<div class="modal fade show" id="addModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodaj nowe przypisanie roli do użytkownika</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="Name" class="control-label">Nazwa użytkownika</label>
+                        <input form="Name" class="form-control" @bind="@identityUser.UserName" />
+                    </div>
+                    <div class="form-group">
+                        <th scope="col">Wybierz rolę</th>
+                        <div class="form-control-wrapper">
+                            <select class="form-control=label" @onchange="RoleChangeHandler">
+                                <option value=""> - Brak - </option>
+                                @foreach (var item in AllRoles)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@CreateUserRole" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string AddObjId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    private List<IdentityRole> AllRoles = new List<IdentityRole>();
+    IdentityUserRole<string> identityUserRole = new IdentityUserRole<string>();
+    IdentityRole identityRole = new IdentityRole();
+    IdentityUser identityUser = new IdentityUser();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void CreateUserRole()
+    {
+        identityUserRole.UserId = AddObjId;
+        await userRolesService.InsertUserRoleAsync(identityUserRole);
+        await ModalCancel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
+
+        identityUser = await Task.Run(() => userService.GetUserAsync(AddObjId));
+    }
+
+    private async Task RoleChangeHandler(ChangeEventArgs args)
+    {
+        identityRole = await Task.Run(() => rolesService.GetRoleAsync(args.Value.ToString()));
+        identityUserRole.RoleId = identityRole.Id;
+        StateHasChanged();
+    }
+}

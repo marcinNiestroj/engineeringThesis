@@ -1,10 +1,13 @@
 ﻿@page "/Roles"
-@using ProjektInzynierskiBlazor.Data
+@using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
-@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity
 @inject RolesService rolesService
+@inject UserService userService
+@inject RolesAccessService rolesAccessService
+@inject UserRolesService userRolesService
 
-<h3>Zarządzaj rolami</h3>
+<h3>Zarządzaj uprawnieniami i rolami użytkowników</h3>
 
 @if (AllRoles is null)
 {
@@ -12,94 +15,233 @@
 }
 else
 {
-    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj rolę</button>
-
     <div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Nazwa</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in AllRoles)
-                {
+        <th scope="row">
+            <button class="btn btn-info" @onclick="() => OpenAddRoleDialog()">Dodaj rolę</button>
+        </th>
+        <div>
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <th scope="row">@item.Name</th>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
-                        </td>
+                        <th scope="col">Nazwa</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in AllRoles)
+                    {
+                        <tr>
+                            <th scope="row">@item.Name</th>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditRoleDialog(item.Id)">Edytuj</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteRoleDialog(item.Id)">Usuń</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    @if (AddDialogOpen)
+
+    <h3>Zarządzaj uprawnieniami dostępu</h3>
+    <div>
+        <button class="btn btn-info" @onclick="() => OpenAddAccessDialog()">Dodaj stronę</button>
+
+        <div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Nazwa</th>
+                        <th scope="col">Adres URL</th>
+                        <th scope="col">AccessString</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in AllRolesAccesses)
+                    {
+                        <tr>
+                            <th scope="row">@item.Name</th>
+                            <th scope="row">@item.UrlAddress</th>
+                            <th scope="row">@item.AccessString</th>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditAccessDialog(item.Id)">Edytuj</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteAccessDialog(item.Id)">Usuń</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <h3>Zarządzaj rolami użytkowników</h3>
+    <div>
+        <div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Nazwa użytkownika</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in AllUsers)
+                    {
+                        <tr>
+                            <th scope="row">@item.UserName</th>
+                            <td>
+                                <button type="button" class="btn btn-success btn-sm" @onclick="() => OpenAddUserRolesDialog(item.Id)">Przypisz rolę</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditUserRolesDialog(item.Id)">Edytuj</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteUserRolesDialog(item.Id)">Usuń</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @*<div class="col-12">
+        <h3><b>Chechbox Test</b></h3>
+        <hr />
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">checkbox list :</label>
+            <AccessesCheckboxList Data="@AllRolesAccesses" TextField="@((x) => x.Name)" ValueField="@((x) => x.AccessString)" SelectedValues="@SelectedIds"></AccessesCheckboxList>
+        </div>*@
+    @*<div class="col-12 row">
+            <label class="col-2 font-weight-bold">Selected : </label>
+            <b>@OutputValue</b>
+        </div>*@
+    @*<div class="col-12 row">
+                <span class="col-2"></span>
+                <button class="form-control col-1 btn btn-primary" @onclick="ShowSelectedValues">Show values</button>
+            </div>
+        </div>*@
+
+    @if (AddRoleDialogOpen)
     {
-        <AddRole OnClose="OnAddDialogClose"></AddRole>
+        <AddRole OnClose="OnAddRoleDialogClose"></AddRole>
     }
 
-    @if (EditDialogOpen)
+    @if (EditRoleDialogOpen)
     {
-        <EditRole EditObjId="@roleId" OnClose="OnEditDialogClose"></EditRole>
+        <EditRole EditObjId="@roleId" OnClose="OnEditRoleDialogClose"></EditRole>
     }
 
-    @if (DeleteDialogOpen)
+    @if (DeleteRoleDialogOpen)
     {
-        <DeleteRole DeleteObjId="@roleId" OnClose="OnDeleteDialogClose"></DeleteRole>
+        <DeleteRole DeleteObjId="@roleId" OnClose="OnDeleteRoleDialogClose"></DeleteRole>
     }
 
+    @if (AddAccessDialogOpen)
+    {
+        <AddRolesAccess OnClose="OnAddAccessDialogClose"></AddRolesAccess>
+    }
+
+    @if (EditAccessDialogOpen)
+    {
+        <EditRolesAccess EditObjId="@roleAccessId" OnClose="OnEditAccessDialogClose"></EditRolesAccess>
+    }
+
+    @if (DeleteAccessDialogOpen)
+    {
+        <DeleteRolesAccess DeleteObjId="@roleAccessId" OnClose="OnDeleteAccessDialogClose"></DeleteRolesAccess>
+    }
+
+    @if (AddUserRolesDialogOpen)
+    {
+        <AddUserRole AddObjId="@userId" OnClose="OnAddUserRolesDialogClose"></AddUserRole>
+    }
+
+    @if (EditUserRolesDialogOpen)
+    {
+        <EditUserRole EditObjId="@userId" OnClose="OnEditUserRolesDialogClose"></EditUserRole>
+    }
+
+    @if (DeleteUserRolesDialogOpen)
+    {
+        <DeleteUserRole DeleteObjId="@userId" OnClose="OnDeleteUserRolesDialogClose"></DeleteUserRole>
+    }
 }
 
 @code {
-    public List<IdentityRole> AllRoles = new List<IdentityRole>();
+    //Roles
+    private List<IdentityRole> AllRoles = new List<IdentityRole>();
+    private List<IdentityUser> AllUsers = new List<IdentityUser>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
+    private List<IdentityUserRole<string>> AllUserRoles = new List<IdentityUserRole<string>>();
+
+    IdentityUserRole<string> IdentityUserRole = new IdentityUserRole<string>();
 
     public IdentityRole role { get; set; }
-    public bool AddDialogOpen { get; set; }
-    public bool EditDialogOpen { get; set; }
-    public bool DeleteDialogOpen { get; set; }
+    public IdentityUser user { get; set; }
+    public RolesAccess rolesAccess { get; set; }
+    public bool AddRoleDialogOpen { get; set; }
+    public bool AddUserRolesDialogOpen { get; set; }
+    public bool AddAccessDialogOpen { get; set; }
+    public bool EditRoleDialogOpen { get; set; }
+    public bool EditUserRolesDialogOpen { get; set; }
+    public bool EditAccessDialogOpen { get; set; }
+    public bool DeleteRoleDialogOpen { get; set; }
+    public bool DeleteUserRolesDialogOpen { get; set; }
+    public bool DeleteAccessDialogOpen { get; set; }
     public string roleId { get; set; }
+    public string userId { get; set; }
+    public string roleAccessId { get; set; }
 
+    //Accesses
+    protected List<string> SelectedItems = new List<string>();
+    public string OutputValue { get; set; }
+
+
+    //rest Roles
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        AllUserRoles = await Task.Run(() => userRolesService.GetAllIdentityUserRolesAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
         StateHasChanged();
     }
 
-    private async Task OnAddDialogClose(bool accepted)
+    private async Task OnAddRoleDialogClose(bool accepted)
     {
-        AddDialogOpen = false;
+        AddRoleDialogOpen = false;
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
         StateHasChanged();
     }
 
-    private void OpenAddDialog()
+    private void OpenAddRoleDialog()
     {
-        AddDialogOpen = true;
+        AddRoleDialogOpen = true;
         StateHasChanged();
     }
 
-    private async Task OnEditDialogClose(bool accepted)
+    private async Task OnEditRoleDialogClose(bool accepted)
     {
-        EditDialogOpen = false;
+        EditRoleDialogOpen = false;
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
         StateHasChanged();
     }
 
-    private void OpenEditDialog(string idToEdit)
+    private void OpenEditRoleDialog(string idToEdit)
     {
-        EditDialogOpen = true;
+        EditRoleDialogOpen = true;
         roleId = idToEdit;
         StateHasChanged();
     }
 
-    private async Task OnDeleteDialogClose(bool accepted)
+    private async Task OnDeleteRoleDialogClose(bool accepted)
     {
         if (accepted)
         {
@@ -107,15 +249,124 @@ else
             await rolesService.DeleteRoleAsync(role);
         }
 
-        DeleteDialogOpen = false;
+        DeleteRoleDialogOpen = false;
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
         StateHasChanged();
     }
 
-    private void OpenDeleteDialog(string idToDelete)
+    private void OpenDeleteRoleDialog(string idToDelete)
     {
-        DeleteDialogOpen = true;
+        DeleteRoleDialogOpen = true;
         roleId = idToDelete;
+        StateHasChanged();
+    }
+
+    //access
+    private async Task OnAddAccessDialogClose(bool accepted)
+    {
+        AddAccessDialogOpen = false;
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddAccessDialog()
+    {
+        AddAccessDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditAccessDialogClose(bool accepted)
+    {
+        EditAccessDialogOpen = false;
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditAccessDialog(string idToEdit)
+    {
+        EditAccessDialogOpen = true;
+        roleAccessId = idToEdit;
+        StateHasChanged();
+    }   
+
+    private async Task OnDeleteAccessDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            rolesAccess = await Task.Run(() => rolesAccessService.GetRolesAccessAsync(roleAccessId));
+            await rolesAccessService.DeleteRolesAccessAsync(rolesAccess);
+        }
+
+        DeleteAccessDialogOpen = false;
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteAccessDialog(string idToDelete)
+    {
+        DeleteAccessDialogOpen = true;
+        roleAccessId = idToDelete;
+        StateHasChanged();
+    }
+
+    //user roles
+    private async Task OnAddUserRolesDialogClose(bool accepted)
+    {
+        AddUserRolesDialogOpen = false;
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddUserRolesDialog(string idToAdd)
+    {
+        AddUserRolesDialogOpen = true;
+        userId = idToAdd;
+        StateHasChanged();
+    }
+
+    private async Task OnEditUserRolesDialogClose(bool accepted)
+    {
+        EditUserRolesDialogOpen = false;
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditUserRolesDialog(string idToEdit)
+    {
+        EditUserRolesDialogOpen = true;
+        userId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteUserRolesDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            IdentityUserRole = await Task.Run(() => userRolesService.GetUserRoleAsync(userId));
+            await userRolesService.DeleteUserRoleAsync(IdentityUserRole);
+        }
+
+        DeleteUserRolesDialogOpen = false;
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteUserRolesDialog(string idToDelete)
+    {
+        DeleteUserRolesDialogOpen = true;
+        userId = idToDelete;
+        StateHasChanged();
+    }
+
+    private void OpenSelectUserDialog()
+    {
+        //body
+    }
+
+    //accesses
+    protected void ShowSelectedValues()
+    {
+        OutputValue = string.Join(", ", SelectedItems.ToArray());
         StateHasChanged();
     }
 }

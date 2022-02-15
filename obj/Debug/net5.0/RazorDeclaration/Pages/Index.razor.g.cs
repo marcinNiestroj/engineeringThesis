@@ -9,7 +9,6 @@ namespace ProjektInzynierskiBlazor.Pages
     #line hidden
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
@@ -22,13 +21,6 @@ using System.Net.Http;
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\_Imports.razor"
 using Microsoft.AspNetCore.Authorization;
-
-#line default
-#line hidden
-#nullable disable
-#nullable restore
-#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\_Imports.razor"
-using Microsoft.AspNetCore.Components.Authorization;
 
 #line default
 #line hidden
@@ -82,14 +74,151 @@ using ProjektInzynierskiBlazor.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using System.Threading;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using System.Linq;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using Microsoft.AspNetCore.Identity;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 5 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using Microsoft.AspNetCore.Components.Authorization;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 6 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using ProjektInzynierskiBlazor.Pages;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 7 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 8 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 9 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+using Microsoft.AspNetCore.Http;
+
+#line default
+#line hidden
+#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/")]
-    public partial class Index : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class Index : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
         {
         }
         #pragma warning restore 1998
+#nullable restore
+#line 121 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+      
+    private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> UsersOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> YesterdayOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> TodayOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> TommorowOfficeWorks = new List<OfficeWork>();
+    private List<Order> AllOrders = new List<Order>();
+    private List<Order> UsersOrders = new List<Order>();
+    private List<Order> YesterdayOrders = new List<Order>();
+    private List<Order> TodayOrders = new List<Order>();
+    private List<Order> TommorowOrders = new List<Order>();
+    private List<Employee> AllEmployees = new List<Employee>();
+    private List<IdentityUser> AllIdentityUsers = new List<IdentityUser>();
+
+    public OfficeWork officeWork { get; set; }
+    public Order order { get; set; }
+    public Employee employee { get; set; }
+    public IdentityUser identityUser { get; set; }
+    public bool OfficeWorkDetailsDialogOpen { get; set; }
+    public bool OrderDetailsDialogOpen { get; set; }
+    public bool EditOfficeWorkDialogOpen { get; set; }
+    public bool EditOrderDialogOpen { get; set; }
+    public string orderId { get; set; }
+    public string officeWorkId { get; set; }
+    public string employeeId { get; set; }
+    public string identityUserName { get; set; }
+
+
+    private string _displayDate;
+    private string _todayDate = DateTime.Today.ToString("dddd dd MMMM yyyy");
+    private string _yesterdayDate = DateTime.Today.AddDays(-1).ToString("dddd dd MMMM yyyy");
+    private string _tomorrowDate = DateTime.Today.AddDays(1).ToString("dddd dd MMMM yyyy");
+    private Timer timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        AllIdentityUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        identityUserName = httpContextAccessor.HttpContext.User.Identity.Name;
+        var idUser = AllIdentityUsers.Where(x => (x.UserName).Contains(identityUserName));
+        identityUser = idUser.First();
+        
+        //identityUser = await Task.Run(() => userService.GetUserByNameAsync(identityUserName));
+        //employee = await Task.Run(() => employeeService.GetEmployeeByUserAsync(identityUser));
+        //employeeId = employee.Id;
+
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        //UsersOfficeWorks = AllOrders.Sele
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+
+        timer = new Timer(Tick, null, 0, 1000);
+    }
+
+    private void Tick(object _)
+    {
+        _displayDate = DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss");
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+
+#line default
+#line hidden
+#nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private UserService userService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private CarService carService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private EquipmentService equipmentService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private LocationService locationService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private OrdererService ordererService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private DepartmentService departmentService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private OrderService orderService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private OfficeWorkService officeWorkService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private IHttpContextAccessor httpContextAccessor { get; set; }
     }
 }
 #pragma warning restore 1591

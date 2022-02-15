@@ -107,7 +107,7 @@ using ProjektInzynierskiBlazor.Data.Services;
 #nullable restore
 #line 64 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Departments\Departments.razor"
        
-    public List<Department> AllDepartments = new List<Department>();
+    private List<Department> AllDepartments = new List<Department>();
 
     public Department department { get; set; }
     public bool AddDialogOpen { get; set; }

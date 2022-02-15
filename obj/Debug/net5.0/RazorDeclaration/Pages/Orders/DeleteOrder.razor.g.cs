@@ -113,6 +113,8 @@ using ProjektInzynierskiBlazor.Data.Services;
     public EventCallback<bool> OnClose { get; set; }
 
     Order order = new Order();
+    Location location = new Location();
+    Orderer orderer = new Orderer();
 
     private Task ModalCancel()
     {
@@ -127,6 +129,8 @@ using ProjektInzynierskiBlazor.Data.Services;
     protected override async Task OnInitializedAsync()
     {
         order = await Task.Run(() => orderService.GetOrderAsync(DeleteObjId));
+        location = order.Location;
+        orderer = order.Orderer;
     }
 
 

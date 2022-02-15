@@ -10,214 +10,199 @@
 
 <div class="modal fade show" id="addModal" role="dialog" tabindex="0" aria-labelledby="addModalTitle" aria-hidden="true" style="overflow:auto; display:block">
     <div class="modal-dialog modal-lg" role="document">
-        @*<div style="max-height: 900px; overflow-y: scroll; position: relative">*@
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addModalTitle">Dodaj zlecenie</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Termin zlecenia</th>
-                                                <th scope="col">Czas wykonania</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">
-                                                    <p>
-                                                <th scope="row"><label for="OrderFrom" class="control-label">Od</label></th>
-                                                <th scope="row"><input form="OrderFrom" class="form-control" type="date" @bind="@order.OrderFrom" /></th>
-                                                </p>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalTitle">Dodaj zlecenie</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Termin zlecenia</th>
+                                            <th scope="col">Czas wykonania</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
                                                 <p>
-                                                <th scope="row"><label for="OrderTo" class="control-label">Do</label></th>
-                                                <th scope="row"><input form="OrderTo" class="form-control" type="date" @bind="@order.OrderTo" /></th>
-                                                </p>
-                                                </th>
-                                                <th scope="row">
-                                                    <p>
-                                                <th scope="row"><label for="DoneFrom" class="control-label">Od</label></th>
-                                                <th scope="row"><input form="DoneFrom" class="form-control" type="date" @bind="@order.DoneFrom" /></th>
-                                                </p>
+                                            <th scope="row"><label for="OrderFrom" class="control-label">Od</label></th>
+                                            <th scope="row"><input form="OrderTo" class="form-control" type="datetime" format-value="{0:yyyy-MM-dd HH:mm}" @bind="@order.OrderFrom" /></th>
+                                            </p>
+                                            <p>
+                                            <th scope="row"><label for="OrderTo" class="control-label">Do</label></th>
+                                            <th scope="row"><input form="OrderTo" class="form-control" type="datetime" format-value="{0:yyyy-MM-dd HH:mm}" @bind="@order.OrderTo" /></th>
+                                            </p>
+                                            </th>
+                                            <th scope="row">
                                                 <p>
-                                                <th scope="row"><label for="DoneTo" class="control-label">Do</label></th>
-                                                <th scope="row"><input form="DoneTo" class="form-control" type="date" @bind="@order.DoneTo" /></th>
-                                                </p>
-                                                </th>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                            <th scope="row"><label for="DoneFrom" class="control-label">Od</label></th>
+                                            <th scope="row"><input form="DoneFrom" class="form-control" type="datetime" format-value="{0:yyyy-MM-dd HH:mm}" @bind="@order.DoneFrom" /></th>
+                                            </p>
+                                            <p>
+                                            <th scope="row"><label for="DoneTo" class="control-label">Do</label></th>
+                                            <th scope="row"><input form="DoneTo" class="form-control" type="datetime" format-value="{0:yyyy-MM-dd HH:mm}" @bind="@order.DoneTo" /></th>
+                                            </p>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz obiekt</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @onchange="LocationChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllLocations)
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    </select>
                                 </div>
-                                <div class="form-group">
-                                    <th scope="col">Wybierz obiekt</th>
-                                    <div class="form-control-wrapper">
-                                        <select class="form-control=label" @onchange="LocationChangeHandler">
-                                            @foreach (var item in AllLocations)
-                                            {
-                                                <option value="@item.Id">@item.Name</option>
-                                            }
-                                        </select>
-                                    </div>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz zleceniodawcę</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @onchange="OrdererChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllOrderers)
+                                        {
+                                            <option value="@item.Id">@item.Name , @item.Company</option>
+                                        }
+                                    </select>
                                 </div>
-                                <div class="form-group">
-                                    <th scope="col">Wybierz zleceniodawcę</th>
-                                    <div class="form-control-wrapper">
-                                        <select class="form-control=label" @onchange="OrdererChangeHandler">
-                                            @foreach (var item in AllOrderers)
-                                            {
-                                                <option value="@item.Id">@item.Name , @item.Company</option>
-                                            }
-                                        </select>
-                                    </div>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Treść zlecenia</th>
+                                <input form="WhatToDo" class="form-control" size="50" @bind="@order.WhatToDo" />
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Informacje</th>
+                                <input form="Informations" class="form-control" size="50" @bind="@order.Informations" />
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz oddział</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control-label" @onchange="DepartmentChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllDepartments)
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    </select>
                                 </div>
-                                <div class="form-group">
-                                    <th scope="col">Treść zlecenia</th>
-                                    <input form="WhatToDo" class="form-control" size="50" @bind="@order.WhatToDo" />
+                            </div>
+                            <div class="form-group">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Wybierz pracowników</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                <p>
+                                            <th scope="row"><label for="FirstEmployee" class="control-label">Wybierz pierwszego pracownika</label></th>
+                                            <th scope="row">
+                                                <div class="form-control-wrapper">
+                                                    <select class="form-control-label" @onchange="FirstEmployeeChangeHandler">
+                                                        <option value="">-Brak-</option>
+                                                        @foreach (var item in AllEmployees)
+                                                        {
+                                                            <option value="@item.Id">@item.FirstName @item.LastName</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </th>
+                                            </p>
+                                            </th>
+                                            <th scope="row">
+                                                <p>
+                                            <th scope="row"><label for="SecondEmployee" class="control-label">Wybierz drugiego pracownika</label></th>
+                                            <th scope="row">
+                                                <div class="form-control-wrapper">
+                                                    <select class="form-control-label" @onchange="SecondEmployeeChangeHandler">
+                                                        <option value="">-Brak-</option>
+                                                        @foreach (var item in AllEmployees)
+                                                        {
+                                                            <option value="@item.Id">@item.FirstName @item.LastName</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </th>
+                                            </p>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz pojazd</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @onchange="CarChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllCars)
+                                        {
+                                            <option value="@item.Id">@item.Name , @item.RegistrationNumber</option>
+                                        }
+                                    </select>
                                 </div>
-                                <div class="form-group">
-                                    <th scope="col">Informacje</th>
-                                    <input form="Informations" class="form-control" size="50" @bind="@order.Informations" />
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz wyposażenie</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @onchange="FirstEquipmentChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllEquipments)
+                                        {
+                                            <option value="@item.Id">@item.Number , @item.Elements</option>
+                                        }
+                                    </select>
                                 </div>
-                                <div class="form-group">
-                                    <th scope="col">Wybierz oddział</th>
-                                    <div class="form-control-wrapper">
-                                        <select class="form-control-label" @onchange="DepartmentChangeHandler">
-                                            @foreach (var item in AllDepartments)
-                                            {
-                                                <option value="@item.Id">@item.Name</option>
-                                            }
-                                        </select>
-                                    </div>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz wyposażenie dodatkowe</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @onchange="SecondEquipmentChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllEquipments)
+                                        {
+                                            <option value="@item.Id">@item.Number , @item.Elements</option>
+                                        }
+                                    </select>
                                 </div>
-                                <div class="form-group">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Wybierz pracowników</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">
-                                                    <p>
-                                                <th scope="row"><label for="FirstEmployee" class="control-label">Wybierz pierwszego pracownika</label></th>
-                                                <th scope="row">
-                                                    <div class="form-control-wrapper">
-                                                        <select class="form-control-label" @onchange="FirstEmployeeChangeHandler">
-                                                            @foreach (var item in AllEmployees)
-                                                            {
-                                                                <option value="@item.Id">@item.FirstName @item.LastName</option>
-                                                            }
-                                                        </select>
-                                                    </div>
-                                                </th>
-                                                </p>
-                                                </th>
-                                                <th scope="row">
-                                                    <p>
-                                                <th scope="row"><label for="SecondEmployee" class="control-label">Wybierz drugiego pracownika</label></th>
-                                                <th scope="row">
-                                                    <div class="form-control-wrapper">
-                                                        <select class="form-control-label" @onchange="SecondEmployeeChangeHandler">
-                                                            <option value="">-Brak-</option>
-                                                            @foreach (var item in AllEmployees)
-                                                            {
-                                                                <option value="@item.Id">@item.FirstName @item.LastName</option>
-                                                            }
-                                                        </select>
-                                                    </div>
-                                                </th>
-                                                </p>
-                                                </th>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="form-group">
-                                    <th scope="col">Wybierz pojazd</th>
-                                    <div class="form-control-wrapper">
-                                        <select class="form-control=label" @onchange="CarChangeHandler">
-                                            @foreach (var item in AllCars)
-                                            {
-                                                <option value="@item.Id">@item.Name , @item.RegistrationNumber</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Wybierz wyposażenie</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">
-                                                    <p>
-                                                <th scope="row"><label for="FirstEquipment" class="control-label">Wybierz wyposażenie</label></th>
-                                                <th scope="row">
-                                                    <div class="form-control-wrapper">
-                                                        <select class="form-control-label" @onchange="FirstEquipmentChangeHandler">
-                                                            @foreach (var item in AllEquipments)
-                                                            {
-                                                                <option value="@item.Id">@item.Number , @item.Elements</option>
-                                                            }
-                                                        </select>
-                                                    </div>
-                                                </th>
-                                                </p>
-                                                </th>
-                                                <th scope="row">
-                                                    <p>
-                                                <th scope="row"><label for="SecondEquipment" class="control-label">Wybierz wyposażenie dodatkowe</label></th>
-                                                <th scope="row">
-                                                    <div class="form-control-wrapper">
-                                                        <select class="form-control-label" @onchange="SecondEquipmentChangeHandler">
-                                                            <option value="">-Brak-</option>
-                                                            @foreach (var item in AllEquipments)
-                                                            {
-                                                                <option value="@item.Id">@item.Number , @item.Elements</option>
-                                                            }
-                                                        </select>
-                                                    </div>
-                                                </th>
-                                                </p>
-                                                </th>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <input type="button" class="btn btn-success" @onclick="@CreateOrder" value="Zapisz" />
-                                            <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
-                                        </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="button" class="btn btn-success" @onclick="@CreateOrder" value="Zapisz" />
+                                        <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
-        @*</div>*@
+        </div>
     </div>
 </div>
 
 
 @code {
-        [Parameter]
-        public EventCallback<bool> OnClose { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public DateTime OrderFromDate { get; set; }
+    public DateTime OrderFromTime { get; set; }
 
     private List<Department> AllDepartments = new List<Department>();
     private List<Orderer> AllOrderers = new List<Orderer>();
@@ -329,4 +314,5 @@
         }
         StateHasChanged();
     }
+
 }

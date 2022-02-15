@@ -29,6 +29,13 @@ namespace ProjektInzynierskiBlazor.Data.Services
             return user;
         }
 
+        //Get user by Name
+        public async Task<IdentityUser> GetUserByNameAsync(string Name)
+        {
+            IdentityUser user = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.UserName.Equals(Name));
+            return user;
+        }
+
         //Update user
         public async Task<bool> UpdateUserAsync(IdentityUser user)
         {

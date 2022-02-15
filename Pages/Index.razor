@@ -1,7 +1,186 @@
 ﻿@page "/"
+@using System.Threading
+@using System.Linq
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@using ProjektInzynierskiBlazor.Pages
+@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+@inject OfficeWorkService officeWorkService
+@inject OrderService orderService
+@inject DepartmentService departmentService
+@inject OrdererService ordererService
+@inject LocationService locationService
+@inject EquipmentService equipmentService
+@inject CarService carService
+@inject EmployeeService employeeService
+@inject UserService userService
+@implements IDisposable
 
-<h1>Hello, world!</h1>
+<AuthorizeView>
+    <Authorized>
+        <h1>@_displayDate</h1>
+        <hr />
 
-Welcome to your new app.
+        @if (identityUserName is null)
+        {
+            <p><em>Ładowanie...!</em></p>
+        }
+        else
+        {
+        @*Orders*@
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Zlecenia</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@_yesterdayDate</h6>
+                    <hr />
+                    <p>
+                        <label>@identityUserName</label>
+                        <label>@identityUser.Id.ToString()</label>
+                        <label>@identityUser.UserName</label>
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Zlecenia</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@_todayDate</h6>
+                    <hr />
+                    <p>
+                        @*<label>@employee.Id</label>
+                        <label>@employee.FirstName, @employee.LastName</label>*@
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Zlecenia</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@_tomorrowDate</h6>
+                    <hr />
+                    <p>
+                        @*<label>@employeeId</label>*@
+                    </p>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        @*OfficeWorks*@
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Prace kameralne</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@_yesterdayDate</h6>
+                    <hr />
+                    <p>
+                        body4
+                    </p>
+                    <hr />
+                    <a class="btn btn-success">Dodaj pracę</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Prace kameralne</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@_todayDate</h6>
+                    <hr />
+                    <p>
+                        body5
+                    </p>
+                    <hr />
+                    <a class="btn btn-success">Dodaj pracę</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Prace kameralne</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@_tomorrowDate</h6>
+                    <hr />
+                    <p>
+                        body6
+                    </p>
+                    <hr />
+                    <a class="btn btn-success">Dodaj pracę</a>
+                </div>
+            </div>
+        </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>@_displayDate</h1>
+        <hr />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        <h5><b>Witaj!</b></h5>
+        <hr />
+        <p>Zaloguj się by uzyskać dostęp do zadań</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> UsersOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> YesterdayOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> TodayOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> TommorowOfficeWorks = new List<OfficeWork>();
+    private List<Order> AllOrders = new List<Order>();
+    private List<Order> UsersOrders = new List<Order>();
+    private List<Order> YesterdayOrders = new List<Order>();
+    private List<Order> TodayOrders = new List<Order>();
+    private List<Order> TommorowOrders = new List<Order>();
+    private List<Employee> AllEmployees = new List<Employee>();
+    private List<IdentityUser> AllIdentityUsers = new List<IdentityUser>();
+
+    public OfficeWork officeWork { get; set; }
+    public Order order { get; set; }
+    public Employee employee { get; set; }
+    public IdentityUser identityUser { get; set; }
+    public bool OfficeWorkDetailsDialogOpen { get; set; }
+    public bool OrderDetailsDialogOpen { get; set; }
+    public bool EditOfficeWorkDialogOpen { get; set; }
+    public bool EditOrderDialogOpen { get; set; }
+    public string orderId { get; set; }
+    public string officeWorkId { get; set; }
+    public string employeeId { get; set; }
+    public string identityUserName { get; set; }
+
+
+    private string _displayDate;
+    private string _todayDate = DateTime.Today.ToString("dddd dd MMMM yyyy");
+    private string _yesterdayDate = DateTime.Today.AddDays(-1).ToString("dddd dd MMMM yyyy");
+    private string _tomorrowDate = DateTime.Today.AddDays(1).ToString("dddd dd MMMM yyyy");
+    private Timer timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        AllIdentityUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        identityUserName = httpContextAccessor.HttpContext.User.Identity.Name;
+        var idUser = AllIdentityUsers.Where(x => (x.UserName).Contains(identityUserName));
+        identityUser = idUser.First();
+        
+        //identityUser = await Task.Run(() => userService.GetUserByNameAsync(identityUserName));
+        //employee = await Task.Run(() => employeeService.GetEmployeeByUserAsync(identityUser));
+        //employeeId = employee.Id;
+
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        //UsersOfficeWorks = AllOrders.Sele
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+
+        timer = new Timer(Tick, null, 0, 1000);
+    }
+
+    private void Tick(object _)
+    {
+        _displayDate = DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss");
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

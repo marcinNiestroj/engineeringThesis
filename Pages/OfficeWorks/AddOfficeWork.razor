@@ -1,5 +1,138 @@
-﻿<h3>AddOfficeWork</h3>
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject OfficeWorkService officeWorkService
+@inject OrderService orderService
+@inject EmployeeService employeeService
+
+<div class="modal fade show" id="addModal" role="dialog" tabindex="0" aria-labelledby="addModalTitle" aria-hidden="true" style="overflow:auto; display:block">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalTitle">Dodaj pracę kameralną</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Termin zlecenia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                <p>
+                                            <th scope="row"><label for="OrderFrom" class="control-label">Od</label></th>
+                                            <th scope="row"><input form="OrderTo" class="form-control" type="datetime" format-value="{0:yyyy-MM-dd HH:mm}" @bind="@officeWork.From" /></th>
+                                            </p>
+                                            <p>
+                                            <th scope="row"><label for="OrderTo" class="control-label">Do</label></th>
+                                            <th scope="row"><input form="OrderTo" class="form-control" type="datetime" format-value="{0:yyyy-MM-dd HH:mm}" @bind="@officeWork.To" /></th>
+                                            </p>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz zlecenie</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @onchange="OrderChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllOrders)
+                                        {
+                                            <option value="@item.Id">@item.Location.Name, @item.Orderer.Name, @string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderFrom), @string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderTo), @item.WhatToDo</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Wybierz pracownika</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @onchange="EmployeeChangeHandler">
+                                        <option value="">-Brak-</option>
+                                        @foreach (var item in AllEmployees)
+                                        {
+                                            <option value="@item.Id">@item.FirstName, @item.LastName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Praca do wykonania</th>
+                                <input form="WhatToDo" class="form-control" size="50" @bind="@officeWork.WhatToDo" />
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Informacje</th>
+                                <input form="Informations" class="form-control" size="50" @bind="@officeWork.Informations" />
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="button" class="btn btn-success" @onclick="@CreateOfficeWork" value="Zapisz" />
+                                        <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
 
+    private List<Order> AllOrders = new List<Order>();
+    private List<Employee> AllEmployees = new List<Employee>();
+
+    OfficeWork officeWork = new OfficeWork();
+
+    Order _selectedOrder;
+    Employee _selectedEmployee;
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void CreateOfficeWork()
+    {
+        officeWork.Status = Data.Statuses.Zlecone;
+        officeWork.Department = _selectedOrder.Department;
+        await officeWorkService.InsertOfficeWorkAsync(officeWork);
+        await ModalCancel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
+        StateHasChanged();
+    }
+
+    private async Task OrderChangeHandler(ChangeEventArgs args)
+    {
+        _selectedOrder = await Task.Run(() => orderService.GetOrderAsync(args.Value.ToString()));
+        officeWork.Order = _selectedOrder;
+        StateHasChanged();
+    }
+
+    private async Task EmployeeChangeHandler(ChangeEventArgs args)
+    {
+        _selectedEmployee = await Task.Run(() => employeeService.GetEmployeeAsync(args.Value.ToString()));
+        officeWork.Employee = _selectedEmployee;
+        StateHasChanged();
+    }
 }

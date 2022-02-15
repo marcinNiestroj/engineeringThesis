@@ -1,0 +1,72 @@
+﻿@using ProjektInzynierskiBlazor.Data.Services
+@using Microsoft.AspNetCore.Identity;
+@inject UserRolesService userRolesService
+@inject RolesService rolesService
+@inject UserService userService
+
+<div class="modal fade show" id="deleteModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Czy na pewno chcesz usunąć to przypisanie roli do użytkowika?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>Użytkownik</label>
+                            <label>@identityUser.UserName</label>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>Rola</label>
+                            <label>@identityRole.Name</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-danger" @onclick="@ModalOk" value="Usuń" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string DeleteObjId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    IdentityUserRole<string> IdentityUserRole = new IdentityUserRole<string>();
+    IdentityRole identityRole = new IdentityRole();
+    IdentityUser identityUser = new IdentityUser();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(true);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IdentityUserRole = await Task.Run(() => userRolesService.GetUserRoleAsync(DeleteObjId));
+
+        identityRole = await Task.Run(() => rolesService.GetRoleAsync(IdentityUserRole.RoleId));
+        identityUser = await Task.Run(() => userService.GetUserAsync(IdentityUserRole.UserId));
+    }
+}

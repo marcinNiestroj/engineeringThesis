@@ -1,0 +1,96 @@
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@using Microsoft.AspNetCore.Identity
+@inject RolesAccessService rolesAccessService
+@inject RolesService rolesService
+
+<div class="modal fade show" id="addModal" role="dialog" style="display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodaj nowy element</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Nazwa</label>
+                                <input form="Name" class="form-control" @bind="@rolesAccess.Name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="UrlAddress" class="control-label">Adres Url</label>
+                                <input form="UrlAddress" class="form-control" @bind="@rolesAccess.UrlAddress" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="AccessString" class="control-label">Dostęp</label>
+                                <input form="AccessString" class="form-control" @bind="@rolesAccess.AccessString" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="AccessChechbox" class="control-label"><b>Uprawnienia dostępu</b></label>
+                            <AccessesCheckboxList Data="@AllRoles" TextField="@((x) => x.Name)" ValueField="@((x) => x.Name)" SelectedValues="@SelectedItems"></AccessesCheckboxList>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="button" class="btn btn-warning" @onclick="@SelectValues" value="Potwierdź wybór" />
+                        </div>   
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@CreateRoleAccess" value="Zapisz" />
+                                <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
+    private List<IdentityRole> AllRoles = new List<IdentityRole>();
+    protected List<string> SelectedItems = new List<string>();
+
+    RolesAccess rolesAccess = new RolesAccess();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected async void CreateRoleAccess()
+    {
+        await rolesAccessService.InsertRolesAccessAsync(rolesAccess);
+        await ModalCancel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
+    }
+
+    private void SelectValues()
+    {
+        rolesAccess.AccessString = string.Join(", ", SelectedItems.ToArray());
+        StateHasChanged();
+    }
+}

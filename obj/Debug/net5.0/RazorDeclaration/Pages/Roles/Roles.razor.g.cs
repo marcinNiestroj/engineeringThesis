@@ -84,7 +84,7 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
-using ProjektInzynierskiBlazor.Data;
+using ProjektInzynierskiBlazor.Data.Entities;
 
 #line default
 #line hidden
@@ -112,52 +112,77 @@ using Microsoft.AspNetCore.Identity;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 58 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
+#line 175 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
        
-    public List<IdentityRole> AllRoles = new List<IdentityRole>();
+    //Roles
+    private List<IdentityRole> AllRoles = new List<IdentityRole>();
+    private List<IdentityUser> AllUsers = new List<IdentityUser>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
+    private List<IdentityUserRole<string>> AllUserRoles = new List<IdentityUserRole<string>>();
+
+    IdentityUserRole<string> IdentityUserRole = new IdentityUserRole<string>();
 
     public IdentityRole role { get; set; }
-    public bool AddDialogOpen { get; set; }
-    public bool EditDialogOpen { get; set; }
-    public bool DeleteDialogOpen { get; set; }
+    public IdentityUser user { get; set; }
+    public RolesAccess rolesAccess { get; set; }
+    public bool AddRoleDialogOpen { get; set; }
+    public bool AddUserRolesDialogOpen { get; set; }
+    public bool AddAccessDialogOpen { get; set; }
+    public bool EditRoleDialogOpen { get; set; }
+    public bool EditUserRolesDialogOpen { get; set; }
+    public bool EditAccessDialogOpen { get; set; }
+    public bool DeleteRoleDialogOpen { get; set; }
+    public bool DeleteUserRolesDialogOpen { get; set; }
+    public bool DeleteAccessDialogOpen { get; set; }
     public string roleId { get; set; }
+    public string userId { get; set; }
+    public string roleAccessId { get; set; }
 
+    //Accesses
+    protected List<string> SelectedItems = new List<string>();
+    public string OutputValue { get; set; }
+
+
+    //rest Roles
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        AllUserRoles = await Task.Run(() => userRolesService.GetAllIdentityUserRolesAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
         StateHasChanged();
     }
 
-    private async Task OnAddDialogClose(bool accepted)
+    private async Task OnAddRoleDialogClose(bool accepted)
     {
-        AddDialogOpen = false;
+        AddRoleDialogOpen = false;
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
         StateHasChanged();
     }
 
-    private void OpenAddDialog()
+    private void OpenAddRoleDialog()
     {
-        AddDialogOpen = true;
+        AddRoleDialogOpen = true;
         StateHasChanged();
     }
 
-    private async Task OnEditDialogClose(bool accepted)
+    private async Task OnEditRoleDialogClose(bool accepted)
     {
-        EditDialogOpen = false;
+        EditRoleDialogOpen = false;
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
         StateHasChanged();
     }
 
-    private void OpenEditDialog(string idToEdit)
+    private void OpenEditRoleDialog(string idToEdit)
     {
-        EditDialogOpen = true;
+        EditRoleDialogOpen = true;
         roleId = idToEdit;
         StateHasChanged();
     }
 
-    private async Task OnDeleteDialogClose(bool accepted)
+    private async Task OnDeleteRoleDialogClose(bool accepted)
     {
         if (accepted)
         {
@@ -165,21 +190,133 @@ using Microsoft.AspNetCore.Identity;
             await rolesService.DeleteRoleAsync(role);
         }
 
-        DeleteDialogOpen = false;
+        DeleteRoleDialogOpen = false;
         AllRoles = await Task.Run(() => rolesService.GetAllRolesAsync());
         StateHasChanged();
     }
 
-    private void OpenDeleteDialog(string idToDelete)
+    private void OpenDeleteRoleDialog(string idToDelete)
     {
-        DeleteDialogOpen = true;
+        DeleteRoleDialogOpen = true;
         roleId = idToDelete;
+        StateHasChanged();
+    }
+
+    //access
+    private async Task OnAddAccessDialogClose(bool accepted)
+    {
+        AddAccessDialogOpen = false;
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddAccessDialog()
+    {
+        AddAccessDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditAccessDialogClose(bool accepted)
+    {
+        EditAccessDialogOpen = false;
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditAccessDialog(string idToEdit)
+    {
+        EditAccessDialogOpen = true;
+        roleAccessId = idToEdit;
+        StateHasChanged();
+    }   
+
+    private async Task OnDeleteAccessDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            rolesAccess = await Task.Run(() => rolesAccessService.GetRolesAccessAsync(roleAccessId));
+            await rolesAccessService.DeleteRolesAccessAsync(rolesAccess);
+        }
+
+        DeleteAccessDialogOpen = false;
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteAccessDialog(string idToDelete)
+    {
+        DeleteAccessDialogOpen = true;
+        roleAccessId = idToDelete;
+        StateHasChanged();
+    }
+
+    //user roles
+    private async Task OnAddUserRolesDialogClose(bool accepted)
+    {
+        AddUserRolesDialogOpen = false;
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddUserRolesDialog(string idToAdd)
+    {
+        AddUserRolesDialogOpen = true;
+        userId = idToAdd;
+        StateHasChanged();
+    }
+
+    private async Task OnEditUserRolesDialogClose(bool accepted)
+    {
+        EditUserRolesDialogOpen = false;
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditUserRolesDialog(string idToEdit)
+    {
+        EditUserRolesDialogOpen = true;
+        userId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteUserRolesDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            IdentityUserRole = await Task.Run(() => userRolesService.GetUserRoleAsync(userId));
+            await userRolesService.DeleteUserRoleAsync(IdentityUserRole);
+        }
+
+        DeleteUserRolesDialogOpen = false;
+        AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteUserRolesDialog(string idToDelete)
+    {
+        DeleteUserRolesDialogOpen = true;
+        userId = idToDelete;
+        StateHasChanged();
+    }
+
+    private void OpenSelectUserDialog()
+    {
+        //body
+    }
+
+    //accesses
+    protected void ShowSelectedValues()
+    {
+        OutputValue = string.Join(", ", SelectedItems.ToArray());
         StateHasChanged();
     }
 
 #line default
 #line hidden
 #nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private UserRolesService userRolesService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesAccessService rolesAccessService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private UserService userService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesService rolesService { get; set; }
     }
 }

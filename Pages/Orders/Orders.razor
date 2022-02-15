@@ -17,7 +17,7 @@
 }
 else
 {
-    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj pracownika</button>
+    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj zlecenie</button>
 
     <div>
         <table class="table table-bordered">
@@ -38,19 +38,22 @@ else
                 {
                 <tr>
                     <th scope="row">
-                        <p>@item.OrderFrom</p>
-                        <p>@item.OrderTo</p>
+                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderFrom)</p>
+                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderTo)</p>
                     </th>
                     <th scope="row">@item.Status</th>
                     <th scope="row">
-                        <p>@item.DoneFrom</p>
-                        <p>@item.DoneTo</p>
+                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.DoneFrom)</p>
+                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.DoneTo)</p>
                     </th>
                     <th scope="row">@item.Location.Name</th>
                     <th scope="row">@item.Department.Name</th>
                     <th scope="row">@item.Orderer.Name</th>
                     <th scope="row">@item.WhatToDo</th>
                     <th scope="row">@item.Informations</th>
+                    <td>
+                        <button type="button" class="btn btn-secondary btn-sm" @onclick="() => OpenDetailsDialog(item.Id)">Szczegóły</button>
+                    </td>
                     <td>
                         <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
                     </td>
@@ -64,33 +67,39 @@ else
     </div>
 
     @if (AddDialogOpen)
-    {
+                        {
         <AddOrder OnClose="@OnAddDialogClose"></AddOrder>
     }
 
     @if (EditDialogOpen)
     {
-        @*<EditOrder EditObjId="@orderId" OnClose="@OnEditDialogClose"></EditOrder>*@
+        <EditOrder EditObjId="@orderId" OnClose="@OnEditDialogClose"></EditOrder>
     }
 
     @if (DeleteDialogOpen)
     {
         <DeleteOrder DeleteObjId="@orderId" OnClose="@OnDeleteDialogClose"></DeleteOrder>
     }
+
+    @if (DetailsDialogOpen)
+    {
+        <OrderDetails DetailsObjId="@orderId" OnClose="@OnDetailsDialogClose"></OrderDetails>
+    }
 }
 
 @code {
-    public List<Order> AllOrders = new List<Order>();
-    public List<Employee> AllEmployees = new List<Employee>();
-    public List<Department> AllDepartments = new List<Department>();
-    public List<Orderer> AllOrderers = new List<Orderer>();
-    public List<Equipment> AllEquipments = new List<Equipment>();
-    public List<Car> AllCars = new List<Car>();
+    private List<Order> AllOrders = new List<Order>();
+    private List<Employee> AllEmployees = new List<Employee>();
+    private List<Department> AllDepartments = new List<Department>();
+    private List<Orderer> AllOrderers = new List<Orderer>();
+    private List<Equipment> AllEquipments = new List<Equipment>();
+    private List<Car> AllCars = new List<Car>();
 
     public Order order { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
+    public bool DetailsDialogOpen { get; set; }
     public string orderId { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -130,6 +139,20 @@ else
     {
         EditDialogOpen = true;
         orderId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDetailsDialogClose(bool accepted)
+    {
+        DetailsDialogOpen = false;
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDetailsDialog(string id)
+    {
+        DetailsDialogOpen = true;
+        orderId = id;
         StateHasChanged();
     }
 

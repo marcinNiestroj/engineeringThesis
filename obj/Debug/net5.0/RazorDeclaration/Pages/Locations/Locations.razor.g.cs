@@ -114,7 +114,7 @@ using ProjektInzynierskiBlazor.Data.Services;
 #nullable restore
 #line 63 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\Locations.razor"
        
-    public List<Location> AllLocations = new List<Location>();
+    private List<Location> AllLocations = new List<Location>();
 
     public Location location { get; set; }
     public bool AddDialogOpen { get; set; }

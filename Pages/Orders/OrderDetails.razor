@@ -1,0 +1,143 @@
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject OrderService orderService
+@inject DepartmentService departmentService
+@inject OrdererService ordererService
+@inject LocationService locationService
+@inject EquipmentService equipmentService
+@inject CarService carService
+@inject EmployeeService employeeService
+
+<div class="modal fade show" id="detailsModal" role="dialog" tabindex="0" aria-labelledby="detailsModalTitle" aria-hidden="true" style="overflow:auto; display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalTitle">Szczegóły zlecenia</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="col-md-8">
+                        <label><b>Oddział: </b></label>
+                        <label>@department.Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Wykonanie od: </b></label>
+                        <label>@string.Format("{0:yyyy-MM-dd HH:mm}", order.OrderFrom)</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Wykonanie do: </b></label>
+                        <label>@string.Format("{0:yyyy-MM-dd HH:mm}", order.OrderFrom)</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Status: </b></label>
+                        <label>@order.Status</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Realizacja od: </b></label>
+                        <label>@string.Format("{0:yyyy-MM-dd HH:mm}", order.DoneFrom)</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Realizacja do: </b></label>
+                        <label>@string.Format("{0:yyyy-MM-dd HH:mm}", order.DoneTo)</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Treść zlecenia: </b></label>
+                        <label>@order.WhatToDo</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Obiekt: </b></label>
+                        <label>@location.Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Zleceniodawca: </b></label>
+                        <label>@orderer.Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>Tel: @orderer.PhoneNumber  </label>
+                        <label>Email: @orderer.Email</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Pracownik: </b></label>
+                        <label>@firstEmployee.FirstName @firstEmployee.LastName</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Pracownik (asystent): </b></label>
+                        @if (secondEmployee is not null)
+                        {
+                            <label>@secondEmployee.FirstName @secondEmployee.LastName</label>
+                        }
+                        else
+                        { 
+                            <label> - </label>
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Główne wyposażenie: </b></label>
+                        <label>@firstEquipment.Number</label>
+                        <label>@firstEquipment.Elements</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Wyposażenie dodatkowe: </b></label>
+                        @if (secondEquipment is not null)
+                        {
+                            <label>@secondEquipment.Number</label>
+                            <label>@secondEquipment.Elements</label>
+                        }
+                        else
+                        {
+                            <label> - </label>
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Pojazd: </b></label>
+                        <label>@car.Name @car.Model </label>
+                        <label>@car.RegistrationNumber</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Dodatkowe informacje: </b></label>
+                        <label>@order.Informations</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    [Parameter]
+    public string DetailsObjId { get; set; }
+
+    Order order = new Order();
+    Location location = new Location();
+    Orderer orderer = new Orderer();
+    Employee firstEmployee = new Employee();
+    Employee secondEmployee = new Employee();
+    Equipment firstEquipment = new Equipment();
+    Equipment secondEquipment = new Equipment();
+    Car car = new Car();
+    Department department = new Department();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = await Task.Run(() => orderService.GetOrderAsync(DetailsObjId));
+        location = order.Location;
+        orderer = order.Orderer;
+        firstEmployee = order.FirstEmployee;
+        secondEmployee = order.SecondEmployee;
+        firstEquipment = order.FirstEquipment;
+        secondEquipment = order.SecondEquipment;
+        car = order.Car;
+        department = order.Department;
+    }
+}

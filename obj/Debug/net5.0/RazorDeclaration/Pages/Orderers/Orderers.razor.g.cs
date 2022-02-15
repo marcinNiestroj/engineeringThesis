@@ -107,7 +107,7 @@ using ProjektInzynierskiBlazor.Data.Entities;
 #nullable restore
 #line 64 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
        
-    public List<Orderer> AllOrderes = new List<Orderer>();
+    private List<Orderer> AllOrderes = new List<Orderer>();
 
     public Orderer orderer { get; set; }
     public bool AddDialogOpen { get; set; }

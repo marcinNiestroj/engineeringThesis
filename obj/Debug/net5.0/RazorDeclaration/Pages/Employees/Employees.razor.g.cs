@@ -114,11 +114,11 @@ using ProjektInzynierskiBlazor.Data.Services;
 #nullable restore
 #line 81 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Employees\Employees.razor"
        
-    public List<Employee> AllEmployees = new List<Employee>();
-    public List<IdentityUser> AllUsers = new List<IdentityUser>();
-    public List<Department> AllDepartments = new List<Department>();
+    private List<Employee> AllEmployees = new List<Employee>();
+    private List<IdentityUser> AllUsers = new List<IdentityUser>();
+    private List<Department> AllDepartments = new List<Department>();
 
-    public Employee employee { get; set; }
+    private Employee employee { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }

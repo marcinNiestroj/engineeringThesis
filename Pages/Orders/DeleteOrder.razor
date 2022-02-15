@@ -8,7 +8,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Czy na pewno chcesz usunąć pracownika?</h5>
+                <h5 class="modal-title">Czy na pewno chcesz usunąć zlecenie?</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -18,23 +18,23 @@
                     <div class="col-md-8">
                         <div class="form-group">
                             <label>Wykonanie od: </label>
-                            <label>@order.OrderFrom</label>
+                            <label>@string.Format("{0:yyyy-MM-dd HH:mm}", order.OrderFrom)</label>
                         </div>
                         <div class="form-group">
                             <label>Wykonanie do: </label>
-                            <label>@order.OrderTo</label>
+                            <label>@string.Format("{0:yyyy-MM-dd HH:mm}", order.OrderTo)</label>
                         </div>
                         <div class="form-group">
                             <label>Obiekt: </label>
-                            <label>@order.Location.Name</label>
+                            <label>@location.Name</label>
                         </div>
                         <div class="form-group">
                             <label>Zleceniodawca: </label>
-                            <label>@order.Orderer.Name</label>
+                            <label>@orderer.Name</label>
                         </div>
                         <div class="form-group">
                             <label>Firma: </label>
-                            <label>@order.Orderer.Company</label>
+                            <label>@orderer.Company</label>
                         </div>
                         <div class="form-group">
                             <label>Zlecenie: </label>
@@ -64,6 +64,8 @@
     public EventCallback<bool> OnClose { get; set; }
 
     Order order = new Order();
+    Location location = new Location();
+    Orderer orderer = new Orderer();
 
     private Task ModalCancel()
     {
@@ -78,6 +80,8 @@
     protected override async Task OnInitializedAsync()
     {
         order = await Task.Run(() => orderService.GetOrderAsync(DeleteObjId));
+        location = order.Location;
+        orderer = order.Orderer;
     }
 
 }

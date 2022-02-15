@@ -84,13 +84,20 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\EditOrder.razor"
-using ProjektInzynierskiBlazor.Data.Entities;
+using ProjektInzynierskiBlazor.Data;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\EditOrder.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\EditOrder.razor"
 using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
@@ -104,7 +111,7 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 101 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\EditOrder.razor"
+#line 213 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\EditOrder.razor"
        
     [Parameter]
     public string EditObjId { get; set; }
@@ -112,15 +119,23 @@ using ProjektInzynierskiBlazor.Data.Services;
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
+    private List<Order> AllOrders = new List<Order>();
+    private List<Department> AllDepartments = new List<Department>();
+    private List<Orderer> AllOrderers = new List<Orderer>();
+    private List<Location> AllLocations = new List<Location>();
+    private List<Equipment> AllEquipments = new List<Equipment>();
+    private List<Car> AllCars = new List<Car>();
+    private List<Employee> AllEmployees = new List<Employee>();
+
     Order order = new Order();
-    Department department = new Department();
-    Orderer orderer = new Orderer();
-    Location location = new Location();
-    Equipment equipment = new Equipment();
-    Car car = new Car();
-    Employee employee = new Employee();
-
-
+    Department _department = new Department();
+    Orderer _orderer = new Orderer();
+    Location _location = new Location();
+    Equipment _firstEquipment = new Equipment();
+    Equipment _secondEquipment = new Equipment();
+    Car _car = new Car();
+    Employee _firstEmployee = new Employee();
+    Employee _secondEmployee = new Employee();
 
     private Task ModalCancel()
     {
@@ -136,20 +151,76 @@ using ProjektInzynierskiBlazor.Data.Services;
     protected override async Task OnInitializedAsync()
     {
         order = await Task.Run(() => orderService.GetOrderAsync(EditObjId));
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        AllOrderers = await Task.Run(() => ordererService.GetAllOrderersAsync());
+        AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
+        AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
 
-        department = employee.Department;
+        _department = order.Department;
+        _orderer = order.Orderer;
+        _location = order.Location;
+        _firstEquipment = order.FirstEquipment;
+        _secondEquipment = order.SecondEquipment;
+        _car = order.Car;
+        _firstEmployee = order.FirstEmployee;
+        _secondEmployee = order.SecondEmployee;
     }
 
-    private void IsEmployedChangeHandler(ChangeEventArgs args)
+    private async Task LocationChangeHandler(ChangeEventArgs args)
     {
-        if (args.Value.ToString().Equals("yes"))
-        {
-            employee.IsEmployed = true;
-        }
-        else
-        {
-            employee.IsEmployed = false;
-        }
+        _location = await Task.Run(() => locationService.GetLocationAsync(args.Value.ToString()));
+        order.Location = _location;
+        StateHasChanged();
+    }
+
+    private async Task OrdererChangeHandler(ChangeEventArgs args)
+    {
+        _orderer = await Task.Run(() => ordererService.GetOrdererAsync(args.Value.ToString()));
+        order.Orderer = _orderer;
+        StateHasChanged();
+    }
+
+    private async Task DepartmentChangeHandler(ChangeEventArgs args)
+    {
+        _department = await Task.Run(() => departmentService.GetDepartmentAsync(args.Value.ToString()));
+        order.Department = _department;
+        StateHasChanged();
+    }
+
+    private async Task FirstEmployeeChangeHandler(ChangeEventArgs args)
+    {
+        _firstEmployee = await Task.Run(() => employeeService.GetEmployeeAsync(args.Value.ToString()));
+        order.FirstEmployee = _firstEmployee;
+        StateHasChanged();
+    }
+
+    private async Task SecondEmployeeChangeHandler(ChangeEventArgs args)
+    {
+        _secondEmployee = await Task.Run(() => employeeService.GetEmployeeAsync(args.Value.ToString()));
+        order.SecondEmployee = _secondEmployee;
+        StateHasChanged();
+    }
+
+    private async Task CarChangeHandler(ChangeEventArgs args)
+    {
+        _car = await Task.Run(() => carService.GetCarAsync(args.Value.ToString()));
+        order.Car = _car;
+        StateHasChanged();
+    }
+
+    private async Task FirstEquipmentChangeHandler(ChangeEventArgs args)
+    {
+        _firstEquipment = await Task.Run(() => equipmentService.GetEquipmentAsync(args.Value.ToString()));
+        order.FirstEquipment = _firstEquipment;
+        StateHasChanged();
+    }
+
+    private async Task SecondEquipmentChangeHandler(ChangeEventArgs args)
+    {
+        _secondEquipment = await Task.Run(() => equipmentService.GetEquipmentAsync(args.Value.ToString()));
+        order.SecondEquipment = _secondEquipment;
         StateHasChanged();
     }
 

@@ -114,10 +114,10 @@ using ProjektInzynierskiBlazor.Data.Services;
 #nullable restore
 #line 67 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
        
-    public List<Car> AllCars = new List<Car>();
+    private List<Car> AllCars = new List<Car>();
 
 
-    public Car car { get; set; }
+    private Car car { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
