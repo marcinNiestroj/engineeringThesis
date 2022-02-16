@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace ProjektInzynierskiBlazor.Pages.OfficeWorks
+namespace ProjektInzynierskiBlazor.Pages.Home
 {
     #line hidden
     using System;
@@ -83,14 +83,14 @@ using ProjektInzynierskiBlazor.Shared;
 #line hidden
 #nullable disable
 #nullable restore
-#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\AddOfficeWork.razor"
 using ProjektInzynierskiBlazor.Data.Entities;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\AddOfficeWork.razor"
 using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
@@ -104,7 +104,7 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 91 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 91 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\AddOfficeWork.razor"
        
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
@@ -124,7 +124,7 @@ using ProjektInzynierskiBlazor.Data.Services;
 
     protected async void CreateOfficeWork()
     {
-        officeWork.Status = Data.Statuses.Wykonane;
+        officeWork.Status = Data.Statuses.Zlecone;
         officeWork.Department = _selectedOrder.Department;
         await officeWorkService.InsertOfficeWorkAsync(officeWork);
         await ModalCancel();

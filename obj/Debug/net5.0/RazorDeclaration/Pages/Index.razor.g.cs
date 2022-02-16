@@ -104,7 +104,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 #nullable disable
 #nullable restore
 #line 6 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
-using ProjektInzynierskiBlazor.Pages;
+using ProjektInzynierskiBlazor.Pages.Home;
 
 #line default
 #line hidden
@@ -139,25 +139,29 @@ using Microsoft.AspNetCore.Http;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 121 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+#line 333 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
       
     private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
-    private List<OfficeWork> UsersOfficeWorks = new List<OfficeWork>();
-    private List<OfficeWork> YesterdayOfficeWorks = new List<OfficeWork>();
-    private List<OfficeWork> TodayOfficeWorks = new List<OfficeWork>();
-    private List<OfficeWork> TommorowOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> UsersYesterdayOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> UsersTodayOfficeWorks = new List<OfficeWork>();
+    private List<OfficeWork> UsersTomorrowOfficeWorks = new List<OfficeWork>();
     private List<Order> AllOrders = new List<Order>();
-    private List<Order> UsersOrders = new List<Order>();
-    private List<Order> YesterdayOrders = new List<Order>();
-    private List<Order> TodayOrders = new List<Order>();
-    private List<Order> TommorowOrders = new List<Order>();
+    private List<Order> UsersYesterdayOrders = new List<Order>();
+    private List<Order> UsersTodayOrders = new List<Order>();
+    private List<Order> UsersTomorrowOrders = new List<Order>();
     private List<Employee> AllEmployees = new List<Employee>();
     private List<IdentityUser> AllIdentityUsers = new List<IdentityUser>();
+    private List<Department> AllDepartments = new List<Department>();
+    private List<Orderer> AllOrderers = new List<Orderer>();
+    private List<Equipment> AllEquipments = new List<Equipment>();
+    private List<Car> AllCars = new List<Car>();
+    private List<Location> AllLocations = new List<Location>();
 
     public OfficeWork officeWork { get; set; }
     public Order order { get; set; }
     public Employee employee { get; set; }
     public IdentityUser identityUser { get; set; }
+    public bool AddOfficeWorkDialogOpen { get; set; }
     public bool OfficeWorkDetailsDialogOpen { get; set; }
     public bool OrderDetailsDialogOpen { get; set; }
     public bool EditOfficeWorkDialogOpen { get; set; }
@@ -169,30 +173,74 @@ using Microsoft.AspNetCore.Http;
 
 
     private string _displayDate;
-    private string _todayDate = DateTime.Today.ToString("dddd dd MMMM yyyy");
-    private string _yesterdayDate = DateTime.Today.AddDays(-1).ToString("dddd dd MMMM yyyy");
-    private string _tomorrowDate = DateTime.Today.AddDays(1).ToString("dddd dd MMMM yyyy");
+    private DateTime _todayDate = DateTime.Today;
+    private DateTime _yesterdayDate = DateTime.Today.AddDays(-1);
+    private DateTime _tomorrowDate = DateTime.Today.AddDays(1);
     private Timer timer;
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
+        //Initialize lists
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
         AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
         AllIdentityUsers = await Task.Run(() => userService.GetAllUsersAsync());
-        identityUserName = httpContextAccessor.HttpContext.User.Identity.Name;
-        var idUser = AllIdentityUsers.Where(x => (x.UserName).Contains(identityUserName));
-        identityUser = idUser.First();
-        
-        //identityUser = await Task.Run(() => userService.GetUserByNameAsync(identityUserName));
-        //employee = await Task.Run(() => employeeService.GetEmployeeByUserAsync(identityUser));
-        //employeeId = employee.Id;
+        AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
+        AllOrderers = await Task.Run(() => ordererService.GetAllOrderersAsync());
+        AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
+        AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
 
-        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
-        //UsersOfficeWorks = AllOrders.Sele
-        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        //Get login employee id
+        identityUserName = httpContextAccessor.HttpContext.User.Identity.Name;
+
+        
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 389 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+         if (identityUserName is not null)
+        {
+            var idUser = AllIdentityUsers.Where(x => (x.UserName).Contains(identityUserName));
+            identityUser = idUser.First();
+            employee = await Task.Run(() => employeeService.GetEmployeeByUserAsync(identityUser));
+            employeeId = employee.Id;
+
+
+            //Get orders and officeworks for login employee
+            var EmployeeOrders = AllOrders.Where(x => ((x.FirstEmployee.Id).Equals(employeeId)));
+            var EmployeeOfficeWorks = AllOfficeWorks.Where(x => ((x.Employee).Equals(employee)));
+
+            //Get orders and officeworks for yesterday, today and tommorow
+            var YesterdayOrders = EmployeeOrders.Where(x => (x.OrderFrom.ToString("yyyy-MM-dd")).Equals(_yesterdayDate.ToString("yyyy-MM-dd")));
+            var TodayOrders = EmployeeOrders.Where(x => (x.OrderFrom.ToString("yyyy-MM-dd")).Equals(_todayDate.ToString("yyyy-MM-dd")));
+            var TomorrowOrders = EmployeeOrders.Where(x => (x.OrderFrom.ToString("yyyy-MM-dd")).Equals(_tomorrowDate.ToString("yyyy-MM-dd")));
+            var YesterdayOfficeWorks = EmployeeOfficeWorks.Where(x => (x.From.ToString("yyyy-MM-dd")).Equals(_yesterdayDate.ToString("yyyy-MM-dd")));
+            var TodayOfficeWorks = EmployeeOfficeWorks.Where(x => (x.From.ToString("yyyy-MM-dd")).Equals(_todayDate.ToString("yyyy-MM-dd")));
+            var TomorrowOfficeWorks = EmployeeOfficeWorks.Where(x => (x.From.ToString("yyyy-MM-dd")).Equals(_tomorrowDate.ToString("yyyy-MM-dd")));
+
+            UsersYesterdayOrders = YesterdayOrders.ToList();
+            UsersTodayOrders = TodayOrders.ToList();
+            UsersTomorrowOrders = TomorrowOrders.ToList();
+            UsersYesterdayOfficeWorks = YesterdayOfficeWorks.ToList();
+            UsersTodayOfficeWorks = TodayOfficeWorks.ToList();
+            UsersTomorrowOfficeWorks = TomorrowOfficeWorks.ToList();
+        }
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 415 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+         
 
         timer = new Timer(Tick, null, 0, 1000);
+
+        StateHasChanged();
     }
 
     private void Tick(object _)
@@ -204,6 +252,75 @@ using Microsoft.AspNetCore.Http;
     public void Dispose()
     {
         timer?.Dispose();
+    }
+
+    private async Task OnEditOrderDialogClose(bool accepted)
+    {
+        EditOrderDialogOpen = false;
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditOrderDialog(string idToEdit)
+    {
+        EditOrderDialogOpen = true;
+        orderId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnOrderDetailsDialogClose(bool accepted)
+    {
+        OrderDetailsDialogOpen = false;
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        StateHasChanged();
+    }
+
+    private void OpenOrderDetailsDialog(string id)
+    {
+        OrderDetailsDialogOpen = true;
+        orderId = id;
+        StateHasChanged();
+    }
+
+    private async Task OnAddOfficeWorkDialogClose(bool accepted)
+    {
+        AddOfficeWorkDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddOfficeWorkDialog()
+    {
+        AddOfficeWorkDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditOfficeWorkDialogClose(bool accepted)
+    {
+        EditOfficeWorkDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditOfficeWorkDialog(string idToEdit)
+    {
+        EditOfficeWorkDialogOpen = true;
+        officeWorkId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnOfficeWorkDetailsDialogClose(bool accepted)
+    {
+        OfficeWorkDetailsDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenOfficeWorkDetailsDialog(string id)
+    {
+        OfficeWorkDetailsDialogOpen = true;
+        officeWorkId = id;
+        StateHasChanged();
     }
 
 #line default

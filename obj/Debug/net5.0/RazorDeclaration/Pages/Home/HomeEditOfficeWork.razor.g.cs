@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace ProjektInzynierskiBlazor.Pages.OfficeWorks
+namespace ProjektInzynierskiBlazor.Pages.Home
 {
     #line hidden
     using System;
@@ -83,20 +83,27 @@ using ProjektInzynierskiBlazor.Shared;
 #line hidden
 #nullable disable
 #nullable restore
-#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\HomeEditOfficeWork.razor"
 using ProjektInzynierskiBlazor.Data.Entities;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\HomeEditOfficeWork.razor"
 using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
 #line hidden
 #nullable disable
-    public partial class AddOfficeWork : Microsoft.AspNetCore.Components.ComponentBase
+#nullable restore
+#line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\HomeEditOfficeWork.razor"
+using ProjektInzynierskiBlazor.Data;
+
+#line default
+#line hidden
+#nullable disable
+    public partial class HomeEditOfficeWork : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -104,60 +111,62 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 91 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 104 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\HomeEditOfficeWork.razor"
        
+    [Parameter]
+    public string EditObjId { get; set; }
+
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
+    private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
     private List<Order> AllOrders = new List<Order>();
     private List<Employee> AllEmployees = new List<Employee>();
 
     OfficeWork officeWork = new OfficeWork();
-
-    Order _selectedOrder;
-    Employee _selectedEmployee;
+    Order _order = new Order();
+    Employee _employee = new Employee();
 
     private Task ModalCancel()
     {
         return OnClose.InvokeAsync(false);
     }
 
-    protected async void CreateOfficeWork()
+    protected async void UpdateOfficeWork()
     {
-        officeWork.Status = Data.Statuses.Wykonane;
-        officeWork.Department = _selectedOrder.Department;
-        await officeWorkService.InsertOfficeWorkAsync(officeWork);
+        await officeWorkService.UpdateOfficeWorkAsync(officeWork);
         await ModalCancel();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-
+        officeWork = await Task.Run(() => officeWorkService.GetOfficeWorkAsync(EditObjId));
         AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
         AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
-        StateHasChanged();
+
+        _order = officeWork.Order;
+        _employee = officeWork.Employee;
     }
 
     private async Task OrderChangeHandler(ChangeEventArgs args)
     {
-        _selectedOrder = await Task.Run(() => orderService.GetOrderAsync(args.Value.ToString()));
-        officeWork.Order = _selectedOrder;
+        _order = await Task.Run(() => orderService.GetOrderAsync(args.Value.ToString()));
+        officeWork.Order = _order;
         StateHasChanged();
     }
 
     private async Task EmployeeChangeHandler(ChangeEventArgs args)
     {
-        _selectedEmployee = await Task.Run(() => employeeService.GetEmployeeAsync(args.Value.ToString()));
-        officeWork.Employee = _selectedEmployee;
+        _employee = await Task.Run(() => employeeService.GetEmployeeAsync(args.Value.ToString()));
+        officeWork.Employee = _employee;
         StateHasChanged();
     }
 
 #line default
 #line hidden
 #nullable disable
-        [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private OrderService orderService { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private OfficeWorkService officeWorkService { get; set; }
     }
 }

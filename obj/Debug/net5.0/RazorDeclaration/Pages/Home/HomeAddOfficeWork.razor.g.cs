@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace ProjektInzynierskiBlazor.Pages.OfficeWorks
+namespace ProjektInzynierskiBlazor.Pages.Home
 {
     #line hidden
     using System;
@@ -83,20 +83,20 @@ using ProjektInzynierskiBlazor.Shared;
 #line hidden
 #nullable disable
 #nullable restore
-#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 1 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\HomeAddOfficeWork.razor"
 using ProjektInzynierskiBlazor.Data.Entities;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\HomeAddOfficeWork.razor"
 using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
 #line hidden
 #nullable disable
-    public partial class AddOfficeWork : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class HomeAddOfficeWork : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -104,7 +104,7 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 91 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\AddOfficeWork.razor"
+#line 91 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Home\HomeAddOfficeWork.razor"
        
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }

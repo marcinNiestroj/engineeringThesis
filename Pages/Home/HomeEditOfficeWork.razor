@@ -1,14 +1,15 @@
 ﻿@using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
+@using ProjektInzynierskiBlazor.Data;
 @inject OfficeWorkService officeWorkService
-@inject OrderService orderService
 @inject EmployeeService employeeService
+@inject OrderService orderService
 
-<div class="modal fade show" id="addModal" role="dialog" tabindex="0" aria-labelledby="addModalTitle" aria-hidden="true" style="overflow:auto; display:block">
+<div class="modal fade show" id="editModal" role="dialog" tabindex="0" aria-labelledby="editModalTitle" aria-hidden="true" style="overflow:auto; display:block">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addModalTitle">Dodaj pracę kameralną</h5>
+                <h5 class="modal-title" id="editModalTitle">Edytuj pracę kameralną</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -39,6 +40,18 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="form-group">
+                                <th scope="col">Określ status pracy kameralnej</th>
+                                <div class="form-control-wrapper">
+                                    <select class="form-control=label" @bind="@officeWork.Status">
+                                        <option value="">@officeWork.Status.ToString()</option>
+                                        @foreach (var item in Enum.GetValues(typeof(Statuses)))
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <th scope="col">Wybierz zlecenie</th>
@@ -75,7 +88,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <input type="button" class="btn btn-success" @onclick="@CreateOfficeWork" value="Zapisz" />
+                                        <input type="button" class="btn btn-success" @onclick="@UpdateOfficeWork" value="Zapisz" />
                                         <input type="button" class="btn btn-primary" @onclick="@ModalCancel" value="Anuluj" />
                                     </div>
                                 </div>
@@ -90,49 +103,51 @@
 
 @code {
     [Parameter]
+    public string EditObjId { get; set; }
+
+    [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
+    private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
     private List<Order> AllOrders = new List<Order>();
     private List<Employee> AllEmployees = new List<Employee>();
 
     OfficeWork officeWork = new OfficeWork();
-
-    Order _selectedOrder;
-    Employee _selectedEmployee;
+    Order _order = new Order();
+    Employee _employee = new Employee();
 
     private Task ModalCancel()
     {
         return OnClose.InvokeAsync(false);
     }
 
-    protected async void CreateOfficeWork()
+    protected async void UpdateOfficeWork()
     {
-        officeWork.Status = Data.Statuses.Wykonane;
-        officeWork.Department = _selectedOrder.Department;
-        await officeWorkService.InsertOfficeWorkAsync(officeWork);
+        await officeWorkService.UpdateOfficeWorkAsync(officeWork);
         await ModalCancel();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-
+        officeWork = await Task.Run(() => officeWorkService.GetOfficeWorkAsync(EditObjId));
         AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
         AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
-        StateHasChanged();
+
+        _order = officeWork.Order;
+        _employee = officeWork.Employee;
     }
 
     private async Task OrderChangeHandler(ChangeEventArgs args)
     {
-        _selectedOrder = await Task.Run(() => orderService.GetOrderAsync(args.Value.ToString()));
-        officeWork.Order = _selectedOrder;
+        _order = await Task.Run(() => orderService.GetOrderAsync(args.Value.ToString()));
+        officeWork.Order = _order;
         StateHasChanged();
     }
 
     private async Task EmployeeChangeHandler(ChangeEventArgs args)
     {
-        _selectedEmployee = await Task.Run(() => employeeService.GetEmployeeAsync(args.Value.ToString()));
-        officeWork.Employee = _selectedEmployee;
+        _employee = await Task.Run(() => employeeService.GetEmployeeAsync(args.Value.ToString()));
+        officeWork.Employee = _employee;
         StateHasChanged();
     }
 }

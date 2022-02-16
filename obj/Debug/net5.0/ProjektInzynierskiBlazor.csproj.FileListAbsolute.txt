@@ -286,7 +286,6 @@ C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Deb
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Orders\DeleteOrder.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Orders\EditOrder.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Orders\Orders.razor.g.cs
-C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\ProjektInzynierskiBlazor.csproj.AssemblyReference.cache
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Orders\OrderDetails.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Orders\OrderDetails.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Roles\AccessesCheckboxList.razor.g.cs
@@ -303,3 +302,14 @@ C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Deb
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Roles\AddUserRole.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Roles\DeleteUserRole.razor.g.cs
 C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Roles\EditUserRole.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Home\HomeAddOfficeWork.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Home\HomeEditOfficeWork.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Home\HomeEditOrder.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Home\HomeOrderDetails.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Home\HomeAddOfficeWork.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Home\HomeEditOfficeWork.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Home\HomeEditOrder.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Home\HomeOrderDetails.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\ProjektInzynierskiBlazor.csproj.AssemblyReference.cache
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\RazorDeclaration\Pages\Home\HomeOfficeWorkDetails.razor.g.cs
+C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\obj\Debug\net5.0\Razor\Pages\Home\HomeOfficeWorkDetails.razor.g.cs

@@ -1,0 +1,97 @@
+﻿@using ProjektInzynierskiBlazor.Data.Entities
+@using ProjektInzynierskiBlazor.Data.Services
+@inject OfficeWorkService officeWorkService
+@inject OrderService orderService
+@inject DepartmentService departmentService
+@inject OrdererService ordererService
+@inject LocationService locationService
+@inject EquipmentService equipmentService
+@inject CarService carService
+@inject EmployeeService employeeService
+
+<div class="modal fade show" id="detailsModal" role="dialog" tabindex="0" aria-labelledby="detailsModalTitle" aria-hidden="true" style="overflow:auto; display:block">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalTitle">Szczegóły pracy kameralnej</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="@ModalCancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="col-md-8">
+                        <label><b>Oddział: </b></label>
+                        <label>@department.Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Realizacja od: </b></label>
+                        <label>@string.Format("{0:yyyy-MM-dd HH:mm}", officeWork.From)</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Realizacja do: </b></label>
+                        <label>@string.Format("{0:yyyy-MM-dd HH:mm}", officeWork.To)</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Status: </b></label>
+                        <label>@officeWork.Status</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Treść zlecenia: </b></label>
+                        <label>@officeWork.WhatToDo</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Obiekt: </b></label>
+                        <label>@location.Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Zleceniodawca: </b></label>
+                        <label>@orderer.Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>Tel: @orderer.PhoneNumber  </label>
+                        <label>Email: @orderer.Email</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Pracownik: </b></label>
+                        <label>@employee.FirstName @employee.LastName</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label><b>Dodatkowe informacje: </b></label>
+                        <label>@officeWork.Informations</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    [Parameter]
+    public string DetailsObjId { get; set; }
+
+    OfficeWork officeWork = new OfficeWork();
+    Order order = new Order();
+    Location location = new Location();
+    Orderer orderer = new Orderer();
+    Employee employee = new Employee();
+    Department department = new Department();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        officeWork = await Task.Run(() => officeWorkService.GetOfficeWorkAsync(DetailsObjId));
+        order = officeWork.Order;
+        location = order.Location;
+        orderer = order.Orderer;
+        employee = officeWork.Employee;
+        department = order.Department;
+    }
+}
