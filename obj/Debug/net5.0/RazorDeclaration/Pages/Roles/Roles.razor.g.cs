@@ -9,7 +9,6 @@ namespace ProjektInzynierskiBlazor.Pages.Roles
     #line hidden
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
@@ -84,20 +83,27 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
-using ProjektInzynierskiBlazor.Data.Entities;
+using System.Linq;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
-using ProjektInzynierskiBlazor.Data.Services;
+using ProjektInzynierskiBlazor.Data.Entities;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 5 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
 using Microsoft.AspNetCore.Identity;
 
 #line default
@@ -112,7 +118,7 @@ using Microsoft.AspNetCore.Identity;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 175 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
+#line 166 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
        
     //Roles
     private List<IdentityRole> AllRoles = new List<IdentityRole>();
@@ -137,6 +143,7 @@ using Microsoft.AspNetCore.Identity;
     public string roleId { get; set; }
     public string userId { get; set; }
     public string roleAccessId { get; set; }
+    public string rolesAccessString { get; set; }
 
     //Accesses
     protected List<string> SelectedItems = new List<string>();
@@ -152,6 +159,11 @@ using Microsoft.AspNetCore.Identity;
         AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
         AllUserRoles = await Task.Run(() => userRolesService.GetAllIdentityUserRolesAsync());
         AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Roles"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
         StateHasChanged();
     }
 
@@ -228,7 +240,7 @@ using Microsoft.AspNetCore.Identity;
         EditAccessDialogOpen = true;
         roleAccessId = idToEdit;
         StateHasChanged();
-    }   
+    }
 
     private async Task OnDeleteAccessDialogClose(bool accepted)
     {
@@ -299,10 +311,10 @@ using Microsoft.AspNetCore.Identity;
         StateHasChanged();
     }
 
-    private void OpenSelectUserDialog()
-    {
-        //body
-    }
+    //private void OpenSelectUserDialog()
+    //{
+    //    //body
+    //}
 
     //accesses
     protected void ShowSelectedValues()

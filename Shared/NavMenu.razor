@@ -12,55 +12,84 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="orderers">
-                <span class="oi oi-plus" aria-hidden="true"></span> Zleceniodawcy
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="departments">
-                <span class="oi oi-plus" aria-hidden="true"></span> Oddziały
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="cars">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Pojazdy
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="locations">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Lokalizacje
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="equipments">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Wyposażenie
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="roles">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Role
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="employees">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Pracownicy
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="officeWorks">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Prace kameralne
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="orders">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Zlecenia
-            </NavLink>
-        </li>
+        <AuthorizeView Roles="@orderersAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="orderers">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Zleceniodawcy
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@departmentsAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="departments">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Oddziały
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@carsAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="cars">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Pojazdy
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@locationsAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="locations">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Lokalizacje
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@equipmentsAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="equipments">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Wyposażenie
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@rolesAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="roles">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Uprawnienia
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@employeesAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="employees">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Pracownicy
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@officeWorksAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="officeWorks">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Prace kameralne
+                </NavLink>
+            </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="@ordersAccessString">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="orders">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Zlecenia
+                </NavLink>
+            </li>
+        </AuthorizeView>
     </ul>
 </div>
 
 @code {
+    public string carsAccessString { get; set; }
+    public string locationsAccessString { get; set; }
+    public string departmentsAccessString { get; set; }
+    public string employeesAccessString { get; set; }
+    public string equipmentsAccessString { get; set; }
+    public string orderersAccessString { get; set; }
+    public string rolesAccessString { get; set; }
+    public string ordersAccessString { get; set; }
+    public string officeWorksAccessString { get; set; }
+
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -68,5 +97,21 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        carsAccessString = "Admin, Szef";
+        locationsAccessString = "Admin, Szef, Kierownik";
+        departmentsAccessString = "Admin, Szef";
+        employeesAccessString = "Admin, Szef";
+        equipmentsAccessString = "Admin, Szef";
+        orderersAccessString = "Admin, Szef, Kierownik";
+        rolesAccessString = "Admin";
+        ordersAccessString = "Admin, Szef, Kierownik";
+        officeWorksAccessString = "Admin, Szef, Kierownik";
+
     }
 }

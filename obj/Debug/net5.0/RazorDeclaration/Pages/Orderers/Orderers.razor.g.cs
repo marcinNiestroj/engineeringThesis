@@ -9,7 +9,6 @@ namespace ProjektInzynierskiBlazor.Pages.Orderers
     #line hidden
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
@@ -84,13 +83,20 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
-using ProjektInzynierskiBlazor.Data.Services;
+using System.Linq;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
+using ProjektInzynierskiBlazor.Data.Services;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
 using ProjektInzynierskiBlazor.Data.Entities;
 
 #line default
@@ -105,19 +111,29 @@ using ProjektInzynierskiBlazor.Data.Entities;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 64 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
+#line 73 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orderers\Orderers.razor"
        
     private List<Orderer> AllOrderes = new List<Orderer>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
     public Orderer orderer { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public string ordererId { get; set; }
+    public string rolesAccessString { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
         AllOrderes = await Task.Run(() => ordererService.GetAllOrderersAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Orderers"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
+        StateHasChanged();
     }
 
     private async Task OnAddDialogClose(bool accepted)
@@ -170,6 +186,7 @@ using ProjektInzynierskiBlazor.Data.Entities;
 #line default
 #line hidden
 #nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesAccessService rolesAccessService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private OrdererService ordererService { get; set; }
     }
 }

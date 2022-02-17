@@ -1,4 +1,5 @@
 ﻿@page "/Orders"
+@using System.Linq
 @using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
 @inject OrderService orderService
@@ -8,6 +9,7 @@
 @inject EquipmentService equipmentService
 @inject CarService carService
 @inject EmployeeService employeeService
+@inject RolesAccessService rolesAccessService
 
 <h3>Zlecenia</h3>
 
@@ -17,57 +19,64 @@
 }
 else
 {
-    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj zlecenie</button>
+    <AuthorizeView Roles="@rolesAccessString">
+        <Authorized>
+            <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj zlecenie</button>
 
-    <div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Data i godzina</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Czas wykonania</th>
-                    <th scope="col">Obiekt</th>
-                    <th scope="col">Oddział</th>
-                    <th scope="col">Zleceniodawca</th>
-                    <th scope="col">Treść zlecenia</th>
-                    <th scope="col">Informacje</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in AllOrders)
-                {
-                <tr>
-                    <th scope="row">
-                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderFrom)</p>
-                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderTo)</p>
-                    </th>
-                    <th scope="row">@item.Status</th>
-                    <th scope="row">
-                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.DoneFrom)</p>
-                        <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.DoneTo)</p>
-                    </th>
-                    <th scope="row">@item.Location.Name</th>
-                    <th scope="row">@item.Department.Name</th>
-                    <th scope="row">@item.Orderer.Name</th>
-                    <th scope="row">@item.WhatToDo</th>
-                    <th scope="row">@item.Informations</th>
-                    <td>
-                        <button type="button" class="btn btn-secondary btn-sm" @onclick="() => OpenDetailsDialog(item.Id)">Szczegóły</button>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    @if (AddDialogOpen)
+            <div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Data i godzina</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Czas wykonania</th>
+                            <th scope="col">Obiekt</th>
+                            <th scope="col">Oddział</th>
+                            <th scope="col">Zleceniodawca</th>
+                            <th scope="col">Treść zlecenia</th>
+                            <th scope="col">Informacje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in AllOrders)
                         {
+                            <tr>
+                                <th scope="row">
+                                    <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderFrom)</p>
+                                    <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.OrderTo)</p>
+                                </th>
+                                <th scope="row">@item.Status</th>
+                                <th scope="row">
+                                    <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.DoneFrom)</p>
+                                    <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.DoneTo)</p>
+                                </th>
+                                <th scope="row">@item.Location.Name</th>
+                                <th scope="row">@item.Department.Name</th>
+                                <th scope="row">@item.Orderer.Name</th>
+                                <th scope="row">@item.WhatToDo</th>
+                                <th scope="row">@item.Informations</th>
+                                <td>
+                                    <button type="button" class="btn btn-secondary btn-sm" @onclick="() => OpenDetailsDialog(item.Id)">Szczegóły</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h5>Brak uprawnień do zarządzania pojazdami</h5>
+        </NotAuthorized>
+    </AuthorizeView>
+    
+    @if (AddDialogOpen)
+    {
         <AddOrder OnClose="@OnAddDialogClose"></AddOrder>
     }
 
@@ -94,13 +103,16 @@ else
     private List<Orderer> AllOrderers = new List<Orderer>();
     private List<Equipment> AllEquipments = new List<Equipment>();
     private List<Car> AllCars = new List<Car>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
     public Order order { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public bool DetailsDialogOpen { get; set; }
     public string orderId { get; set; }
+    public string rolesAccessString { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,6 +124,12 @@ else
         AllOrderers = await Task.Run(() => ordererService.GetAllOrderersAsync());
         AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
         AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Orders"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
         StateHasChanged();
     }
 

@@ -9,7 +9,6 @@ namespace ProjektInzynierskiBlazor.Pages.Orders
     #line hidden
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
@@ -84,13 +83,20 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\Orders.razor"
-using ProjektInzynierskiBlazor.Data.Entities;
+using System.Linq;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\Orders.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\Orders.razor"
 using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
@@ -105,7 +111,7 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 90 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\Orders.razor"
+#line 99 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Orders\Orders.razor"
        
     private List<Order> AllOrders = new List<Order>();
     private List<Employee> AllEmployees = new List<Employee>();
@@ -113,13 +119,16 @@ using ProjektInzynierskiBlazor.Data.Services;
     private List<Orderer> AllOrderers = new List<Orderer>();
     private List<Equipment> AllEquipments = new List<Equipment>();
     private List<Car> AllCars = new List<Car>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
     public Order order { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public bool DetailsDialogOpen { get; set; }
     public string orderId { get; set; }
+    public string rolesAccessString { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -131,6 +140,12 @@ using ProjektInzynierskiBlazor.Data.Services;
         AllOrderers = await Task.Run(() => ordererService.GetAllOrderersAsync());
         AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
         AllCars = await Task.Run(() => carService.GetAllCarsAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Orders"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
         StateHasChanged();
     }
 
@@ -198,6 +213,7 @@ using ProjektInzynierskiBlazor.Data.Services;
 #line default
 #line hidden
 #nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesAccessService rolesAccessService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private CarService carService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private EquipmentService equipmentService { get; set; }

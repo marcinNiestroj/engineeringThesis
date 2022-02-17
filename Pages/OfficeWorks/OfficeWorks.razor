@@ -1,10 +1,12 @@
 ﻿@page "/OfficeWorks"
+@using System.Linq
 @using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
 @inject OfficeWorkService officeWorkService
 @inject OrderService orderService
 @inject DepartmentService departmentService
 @inject EmployeeService employeeService
+@inject RolesAccessService rolesAccessService
 
 <h3>Prace kameralne</h3>
 
@@ -14,48 +16,56 @@
 }
 else
 {
-    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj prace kameralną</button>
+    <AuthorizeView Roles="@rolesAccessString">
+        <Authorized>
+            <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj prace kameralną</button>
 
-    <div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Data i godzina wykonania</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Obiekt</th>
-                    <th scope="col">Oddział</th>
-                    <th scope="col">Zleceniodawca</th>
-                    <th scope="col">Firma</th>
-                    <th scope="col">Treść zlecenia</th>
-                    <th scope="col">Informacje</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in AllOfficeWorks)
-                {
-                    <tr>
-                        <th scope="row">
-                            <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.From)</p>
-                            <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.To)</p>
-                        </th>
-                        <th scope="row">@item.Status</th>
-                        <th scope="row">@item.Order.Location.Name</th>
-                        <th scope="row">@item.Department.Name</th>
-                        <th scope="row">@item.Order.Orderer.Name</th>
-                        <th scope="row">@item.Order.Orderer.Company</th>
-                        <th scope="row">@item.WhatToDo</th>
-                        <th scope="row">@item.Informations</th>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            <div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Data i godzina wykonania</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Obiekt</th>
+                            <th scope="col">Oddział</th>
+                            <th scope="col">Zleceniodawca</th>
+                            <th scope="col">Firma</th>
+                            <th scope="col">Treść zlecenia</th>
+                            <th scope="col">Informacje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in AllOfficeWorks)
+                        {
+                            <tr>
+                                <th scope="row">
+                                    <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.From)</p>
+                                    <p>@string.Format("{0:yyyy-MM-dd HH:mm}", item.To)</p>
+                                </th>
+                                <th scope="row">@item.Status</th>
+                                <th scope="row">@item.Order.Location.Name</th>
+                                <th scope="row">@item.Department.Name</th>
+                                <th scope="row">@item.Order.Orderer.Name</th>
+                                <th scope="row">@item.Order.Orderer.Company</th>
+                                <th scope="row">@item.WhatToDo</th>
+                                <th scope="row">@item.Informations</th>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h5>Brak uprawnień do zarządzania pojazdami</h5>
+        </NotAuthorized>
+    </AuthorizeView>
+    
     @if (AddDialogOpen)
     {
         <AddOfficeWork OnClose="OnAddDialogClose"></AddOfficeWork>
@@ -72,69 +82,78 @@ else
     }
 }
 
-    @code {
-        private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
-        private List<Order> AllOrders = new List<Order>();
+@code {
+    private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
+    private List<Order> AllOrders = new List<Order>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
-        public OfficeWork officeWork { get; set; }
-        public bool AddDialogOpen { get; set; }
-        public bool EditDialogOpen { get; set; }
-        public bool DeleteDialogOpen { get; set; }
-        public string officeWorkId { get; set; }
+    public OfficeWork officeWork { get; set; }
+    private RolesAccess rolesAccess { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string officeWorkId { get; set; }
+    public string rolesAccessString { get; set; }
 
-        protected override async Task OnInitializedAsync()
-        {
-            base.OnInitialized();
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
 
-            AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
-        }
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
 
-        private async Task OnAddDialogClose(bool accepted)
-        {
-            AddDialogOpen = false;
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
-        }
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/OfficeWorks"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
 
-        private void OpenAddDialog()
-        {
-            AddDialogOpen = true;
-            StateHasChanged();
-        }
-
-        private async Task OnEditDialogClose(bool accepted)
-        {
-            EditDialogOpen = false;
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
-        }
-
-        private void OpenEditDialog(string idToEdit)
-        {
-            EditDialogOpen = true;
-            officeWorkId = idToEdit;
-            StateHasChanged();
-        }
-
-        private async Task OnDeleteDialogClose(bool accepted)
-        {
-            if (accepted)
-            {
-                officeWork = await Task.Run(() => officeWorkService.GetOfficeWorkAsync(officeWorkId));
-                await officeWorkService.DeleteOfficeWorkAsync(officeWork);
-            }
-
-            DeleteDialogOpen = false;
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
-        }
-
-        private void OpenDeleteDialog(string idToDelete)
-        {
-            DeleteDialogOpen = true;
-            officeWorkId = idToDelete;
-            StateHasChanged();
-        }
+        StateHasChanged();
     }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        officeWorkId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            officeWork = await Task.Run(() => officeWorkService.GetOfficeWorkAsync(officeWorkId));
+            await officeWorkService.DeleteOfficeWorkAsync(officeWork);
+        }
+
+        DeleteDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        officeWorkId = idToDelete;
+        StateHasChanged();
+    }
+}

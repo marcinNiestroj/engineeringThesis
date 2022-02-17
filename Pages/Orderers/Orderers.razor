@@ -1,7 +1,9 @@
 ﻿@page "/Orderers"
+@using System.Linq
 @using ProjektInzynierskiBlazor.Data.Services
 @using ProjektInzynierskiBlazor.Data.Entities
 @inject OrdererService ordererService
+@inject RolesAccessService rolesAccessService
 
 <h3>Zleceniodawcy</h3>
 
@@ -11,40 +13,47 @@
 }
 else
 {
-    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj zleceniodawce</button>
+    <AuthorizeView Roles="@rolesAccessString">
+        <Authorized>
+            <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj zleceniodawce</button>
 
-    <div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Imię i nazwisko</th>
-                    <th scope="col">Firma</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Numer telefonu</th>
-                    <th scope="col">Informacje</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in AllOrderes)
-                {
-                <tr>
-                    <th scope="row">@item.Name</th>
-                    <th scope="row">@item.Company</th>
-                    <th scope="row">@item.Email</th>
-                    <th scope="row">@item.PhoneNumber</th>
-                    <th scope="row">@item.Informations</th>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
+            <div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Imię i nazwisko</th>
+                            <th scope="col">Firma</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Numer telefonu</th>
+                            <th scope="col">Informacje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in AllOrderes)
+                        {
+                            <tr>
+                                <th scope="row">@item.Name</th>
+                                <th scope="row">@item.Company</th>
+                                <th scope="row">@item.Email</th>
+                                <th scope="row">@item.PhoneNumber</th>
+                                <th scope="row">@item.Informations</th>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h5>Brak uprawnień do zarządzania pojazdami</h5>
+        </NotAuthorized>
+    </AuthorizeView>
+    
     @if (AddDialogOpen)
     {
         <AddOrderer OnClose="@OnAddDialogClose"></AddOrderer>
@@ -63,16 +72,26 @@ else
 
 @code {
     private List<Orderer> AllOrderes = new List<Orderer>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
     public Orderer orderer { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public string ordererId { get; set; }
+    public string rolesAccessString { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
         AllOrderes = await Task.Run(() => ordererService.GetAllOrderersAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Orderers"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
+        StateHasChanged();
     }
 
     private async Task OnAddDialogClose(bool accepted)

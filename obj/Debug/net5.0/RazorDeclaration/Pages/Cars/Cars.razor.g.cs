@@ -9,7 +9,6 @@ namespace ProjektInzynierskiBlazor.Pages.Cars
     #line hidden
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
@@ -84,7 +83,7 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
-using ProjektInzynierskiBlazor.Data;
+using System.Linq;
 
 #line default
 #line hidden
@@ -112,16 +111,19 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 67 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
+#line 76 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Cars\Cars.razor"
        
     private List<Car> AllCars = new List<Car>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
 
     private Car car { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public string carId { get; set; }
+    public string rolesAccessString { get; set; }
 
     private async Task OnAddDialogClose(bool accepted)
     {
@@ -174,14 +176,20 @@ using ProjektInzynierskiBlazor.Data.Services;
     {
         base.OnInitialized();
 
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
         AllCars = await Task.Run(() => carService.GetAllCarsAsync());
-        StateHasChanged();
 
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Cars"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
+        StateHasChanged();
     }
 
 #line default
 #line hidden
 #nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesAccessService rolesAccessService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private CarService carService { get; set; }
     }
 }

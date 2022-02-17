@@ -1,4 +1,5 @@
 ﻿@page "/Roles"
+@using System.Linq
 @using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
 @using Microsoft.AspNetCore.Identity
@@ -15,117 +16,107 @@
 }
 else
 {
-    <div>
-        <th scope="row">
-            <button class="btn btn-info" @onclick="() => OpenAddRoleDialog()">Dodaj rolę</button>
-        </th>
-        <div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">Nazwa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in AllRoles)
-                    {
+    <AuthorizeView Roles="@rolesAccessString">
+        <Authorized>
+            <div>
+            <th scope="row">
+                <button class="btn btn-info" @onclick="() => OpenAddRoleDialog()">Dodaj rolę</button>
+            </th>
+            <div>
+                <table class="table table-bordered">
+                    <thead>
                         <tr>
-                            <th scope="row">@item.Name</th>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditRoleDialog(item.Id)">Edytuj</button>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteRoleDialog(item.Id)">Usuń</button>
-                            </td>
+                            <th scope="col">Nazwa</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-
-    <h3>Zarządzaj uprawnieniami dostępu</h3>
-    <div>
-        <button class="btn btn-info" @onclick="() => OpenAddAccessDialog()">Dodaj stronę</button>
-
-        <div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">Nazwa</th>
-                        <th scope="col">Adres URL</th>
-                        <th scope="col">AccessString</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in AllRolesAccesses)
-                    {
-                        <tr>
-                            <th scope="row">@item.Name</th>
-                            <th scope="row">@item.UrlAddress</th>
-                            <th scope="row">@item.AccessString</th>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditAccessDialog(item.Id)">Edytuj</button>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteAccessDialog(item.Id)">Usuń</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-
-    <h3>Zarządzaj rolami użytkowników</h3>
-    <div>
-        <div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">Nazwa użytkownika</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in AllUsers)
-                    {
-                        <tr>
-                            <th scope="row">@item.UserName</th>
-                            <td>
-                                <button type="button" class="btn btn-success btn-sm" @onclick="() => OpenAddUserRolesDialog(item.Id)">Przypisz rolę</button>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditUserRolesDialog(item.Id)">Edytuj</button>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteUserRolesDialog(item.Id)">Usuń</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    @*<div class="col-12">
-        <h3><b>Chechbox Test</b></h3>
-        <hr />
-        <div class="col-12 row">
-            <label class="col-2 font-weight-bold">checkbox list :</label>
-            <AccessesCheckboxList Data="@AllRolesAccesses" TextField="@((x) => x.Name)" ValueField="@((x) => x.AccessString)" SelectedValues="@SelectedIds"></AccessesCheckboxList>
-        </div>*@
-    @*<div class="col-12 row">
-            <label class="col-2 font-weight-bold">Selected : </label>
-            <b>@OutputValue</b>
-        </div>*@
-    @*<div class="col-12 row">
-                <span class="col-2"></span>
-                <button class="form-control col-1 btn btn-primary" @onclick="ShowSelectedValues">Show values</button>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in AllRoles)
+                        {
+                            <tr>
+                                <th scope="row">@item.Name</th>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditRoleDialog(item.Id)">Edytuj</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteRoleDialog(item.Id)">Usuń</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </div>*@
+            </div>
 
+
+            <h3>Zarządzaj uprawnieniami dostępu</h3>
+            <div>
+                <button class="btn btn-info" @onclick="() => OpenAddAccessDialog()">Dodaj stronę</button>
+
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nazwa</th>
+                                <th scope="col">Adres URL</th>
+                                <th scope="col">Dostęp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in AllRolesAccesses)
+                            {
+                                <tr>
+                                    <th scope="row">@item.Name</th>
+                                    <th scope="row">@item.UrlAddress</th>
+                                    <th scope="row">@item.AccessString</th>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditAccessDialog(item.Id)">Edytuj</button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteAccessDialog(item.Id)">Usuń</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <h3>Zarządzaj rolami użytkowników</h3>
+            <div>
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nazwa użytkownika</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in AllUsers)
+                            {
+                                <tr>
+                                    <th scope="row">@item.UserName</th>
+                                    <td>
+                                        <button type="button" class="btn btn-success btn-sm" @onclick="() => OpenAddUserRolesDialog(item.Id)">Przypisz rolę</button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditUserRolesDialog(item.Id)">Edytuj</button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteUserRolesDialog(item.Id)">Usuń</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h5>Brak uprawnień do zarządzania pojazdami</h5>
+        </NotAuthorized>
+    </AuthorizeView>
+    
     @if (AddRoleDialogOpen)
     {
         <AddRole OnClose="OnAddRoleDialogClose"></AddRole>
@@ -196,6 +187,7 @@ else
     public string roleId { get; set; }
     public string userId { get; set; }
     public string roleAccessId { get; set; }
+    public string rolesAccessString { get; set; }
 
     //Accesses
     protected List<string> SelectedItems = new List<string>();
@@ -211,6 +203,11 @@ else
         AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
         AllUserRoles = await Task.Run(() => userRolesService.GetAllIdentityUserRolesAsync());
         AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Roles"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
         StateHasChanged();
     }
 
@@ -287,7 +284,7 @@ else
         EditAccessDialogOpen = true;
         roleAccessId = idToEdit;
         StateHasChanged();
-    }   
+    }
 
     private async Task OnDeleteAccessDialogClose(bool accepted)
     {
@@ -358,10 +355,10 @@ else
         StateHasChanged();
     }
 
-    private void OpenSelectUserDialog()
-    {
-        //body
-    }
+    //private void OpenSelectUserDialog()
+    //{
+    //    //body
+    //}
 
     //accesses
     protected void ShowSelectedValues()

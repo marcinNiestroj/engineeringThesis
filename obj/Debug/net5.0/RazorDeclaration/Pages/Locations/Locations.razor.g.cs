@@ -9,7 +9,6 @@ namespace ProjektInzynierskiBlazor.Pages.Locations
     #line hidden
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
@@ -84,7 +83,7 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\Locations.razor"
-using ProjektInzynierskiBlazor.Data;
+using System.Linq;
 
 #line default
 #line hidden
@@ -112,21 +111,30 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 63 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\Locations.razor"
+#line 72 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Locations\Locations.razor"
        
     private List<Location> AllLocations = new List<Location>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
     public Location location { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public string locationId { get; set; }
+    public string rolesAccessString { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
         AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Locations"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
         StateHasChanged();
     }
 
@@ -180,6 +188,7 @@ using ProjektInzynierskiBlazor.Data.Services;
 #line default
 #line hidden
 #nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesAccessService rolesAccessService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private LocationService locationService { get; set; }
     }
 }

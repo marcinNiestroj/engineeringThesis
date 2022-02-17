@@ -9,7 +9,6 @@ namespace ProjektInzynierskiBlazor.Pages.OfficeWorks
     #line hidden
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
@@ -84,13 +83,20 @@ using ProjektInzynierskiBlazor.Shared;
 #nullable disable
 #nullable restore
 #line 2 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\OfficeWorks.razor"
-using ProjektInzynierskiBlazor.Data.Entities;
+using System.Linq;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 3 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\OfficeWorks.razor"
+using ProjektInzynierskiBlazor.Data.Entities;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\OfficeWorks.razor"
 using ProjektInzynierskiBlazor.Data.Services;
 
 #line default
@@ -105,77 +111,86 @@ using ProjektInzynierskiBlazor.Data.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 75 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\OfficeWorks.razor"
-           
-        private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
-        private List<Order> AllOrders = new List<Order>();
+#line 85 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\OfficeWorks\OfficeWorks.razor"
+       
+    private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
+    private List<Order> AllOrders = new List<Order>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
-        public OfficeWork officeWork { get; set; }
-        public bool AddDialogOpen { get; set; }
-        public bool EditDialogOpen { get; set; }
-        public bool DeleteDialogOpen { get; set; }
-        public string officeWorkId { get; set; }
+    public OfficeWork officeWork { get; set; }
+    private RolesAccess rolesAccess { get; set; }
+    public bool AddDialogOpen { get; set; }
+    public bool EditDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+    public string officeWorkId { get; set; }
+    public string rolesAccessString { get; set; }
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/OfficeWorks"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
+        StateHasChanged();
+    }
+
+    private async Task OnAddDialogClose(bool accepted)
+    {
+        AddDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenAddDialog()
+    {
+        AddDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private async Task OnEditDialogClose(bool accepted)
+    {
+        EditDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(string idToEdit)
+    {
+        EditDialogOpen = true;
+        officeWorkId = idToEdit;
+        StateHasChanged();
+    }
+
+    private async Task OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
         {
-            base.OnInitialized();
-
-            AllOrders = await Task.Run(() => orderService.GetAllOrdersAsync());
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
+            officeWork = await Task.Run(() => officeWorkService.GetOfficeWorkAsync(officeWorkId));
+            await officeWorkService.DeleteOfficeWorkAsync(officeWork);
         }
 
-        private async Task OnAddDialogClose(bool accepted)
-        {
-            AddDialogOpen = false;
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
-        }
+        DeleteDialogOpen = false;
+        AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
+        StateHasChanged();
+    }
 
-        private void OpenAddDialog()
-        {
-            AddDialogOpen = true;
-            StateHasChanged();
-        }
-
-        private async Task OnEditDialogClose(bool accepted)
-        {
-            EditDialogOpen = false;
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
-        }
-
-        private void OpenEditDialog(string idToEdit)
-        {
-            EditDialogOpen = true;
-            officeWorkId = idToEdit;
-            StateHasChanged();
-        }
-
-        private async Task OnDeleteDialogClose(bool accepted)
-        {
-            if (accepted)
-            {
-                officeWork = await Task.Run(() => officeWorkService.GetOfficeWorkAsync(officeWorkId));
-                await officeWorkService.DeleteOfficeWorkAsync(officeWork);
-            }
-
-            DeleteDialogOpen = false;
-            AllOfficeWorks = await Task.Run(() => officeWorkService.GetAllOfficeWorksAsync());
-            StateHasChanged();
-        }
-
-        private void OpenDeleteDialog(string idToDelete)
-        {
-            DeleteDialogOpen = true;
-            officeWorkId = idToDelete;
-            StateHasChanged();
-        }
-    
+    private void OpenDeleteDialog(string idToDelete)
+    {
+        DeleteDialogOpen = true;
+        officeWorkId = idToDelete;
+        StateHasChanged();
+    }
 
 #line default
 #line hidden
 #nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesAccessService rolesAccessService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private DepartmentService departmentService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private OrderService orderService { get; set; }

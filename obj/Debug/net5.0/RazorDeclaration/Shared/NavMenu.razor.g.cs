@@ -90,8 +90,19 @@ using ProjektInzynierskiBlazor.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 63 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Shared\NavMenu.razor"
+#line 81 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Shared\NavMenu.razor"
        
+    public string carsAccessString { get; set; }
+    public string locationsAccessString { get; set; }
+    public string departmentsAccessString { get; set; }
+    public string employeesAccessString { get; set; }
+    public string equipmentsAccessString { get; set; }
+    public string orderersAccessString { get; set; }
+    public string rolesAccessString { get; set; }
+    public string ordersAccessString { get; set; }
+    public string officeWorksAccessString { get; set; }
+
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -99,6 +110,22 @@ using ProjektInzynierskiBlazor.Shared;
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        carsAccessString = "Admin, Szef";
+        locationsAccessString = "Admin, Szef, Kierownik";
+        departmentsAccessString = "Admin, Szef";
+        employeesAccessString = "Admin, Szef";
+        equipmentsAccessString = "Admin, Szef";
+        orderersAccessString = "Admin, Szef, Kierownik";
+        rolesAccessString = "Admin";
+        ordersAccessString = "Admin, Szef, Kierownik";
+        officeWorksAccessString = "Admin, Szef, Kierownik";
+
     }
 
 #line default

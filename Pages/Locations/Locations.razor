@@ -1,8 +1,9 @@
 ﻿@page "/Locations"
-@using ProjektInzynierskiBlazor.Data
+@using System.Linq
 @using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
 @inject LocationService locationService
+@inject RolesAccessService rolesAccessService
 
 <h3>Lokalizacje</h3>
 
@@ -12,37 +13,45 @@
 }
 else
 {
-    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj lokalizację</button>
+    <AuthorizeView Roles="@rolesAccessString">
+        <Authorized>
+            <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj lokalizację</button>
 
-    <div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Nazwa</th>
-                    <th scope="col">Skrót nazwy</th>
-                    <th scope="col">Adres</th>
-                    <th scope="col">Informacje</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in AllLocations)
-                {
-                    <tr>
-                        <th scope="row">@item.Name</th>
-                        <th scope="row">@item.Shortcut</th>
-                        <th scope="row">@item.Address</th>
-                        <th scope="row">@item.Informations</th>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            <div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nazwa</th>
+                            <th scope="col">Skrót nazwy</th>
+                            <th scope="col">Adres</th>
+                            <th scope="col">Informacje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in AllLocations)
+                        {
+                            <tr>
+                                <th scope="row">@item.Name</th>
+                                <th scope="row">@item.Shortcut</th>
+                                <th scope="row">@item.Address</th>
+                                <th scope="row">@item.Informations</th>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h5>Brak uprawnień do zarządzania pojazdami</h5>
+        </NotAuthorized>
+    </AuthorizeView>
+    
 
     @if (AddDialogOpen)
     {
@@ -62,18 +71,27 @@ else
 
 @code {
     private List<Location> AllLocations = new List<Location>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
     public Location location { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public string locationId { get; set; }
+    public string rolesAccessString { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
         AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Locations"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
         StateHasChanged();
     }
 

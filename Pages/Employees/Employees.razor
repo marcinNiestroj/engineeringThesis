@@ -1,10 +1,12 @@
 ﻿@page "/Employees"
+@using System.Linq
 @using Microsoft.AspNetCore.Identity;
 @using ProjektInzynierskiBlazor.Data.Entities
 @using ProjektInzynierskiBlazor.Data.Services
 @inject EmployeeService employeeService
 @inject UserService userService
 @inject DepartmentService departmentService
+@inject RolesAccessService rolesAccessService
 
 <h3>Pracownicy</h3>
 
@@ -14,54 +16,62 @@
 }
 else
 {
-    <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj pracownika</button>
+    <AuthorizeView Roles="@rolesAccessString">
+        <Authorized>
+            <button class="btn btn-info" @onclick="() => OpenAddDialog()">Dodaj pracownika</button>
 
-    <div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">Imię</th>
-                        <th scope="col">Nazwisko</th>
-                        <th scope="col">Adres</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Numer telefonu</th>
-                        <th scope="col">Oddział</th>
-                        <th scope="col">Zatrudniony od</th>
-                        <th scope="col">Zatrudniony do</th>
-                        <th scope="col">Informacje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in AllEmployees)
-                    {
-                    <tr>
-                        <th scope="row">@item.FirstName</th>
-                        <th scope="row">@item.LastName</th>
-                        <th scope="row">@item.Address</th>
-                        <th scope="row">@item.IdentityUser.Email</th>
-                        <th scope="row">@item.IdentityUser.PhoneNumber</th>
-                        <th scope="row">@item.Department.Name</th>
-                        <th scope="row">@item.EmployedSince</th>
-                        @if (item.IsEmployed)
+            <div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Imię</th>
+                            <th scope="col">Nazwisko</th>
+                            <th scope="col">Adres</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Numer telefonu</th>
+                            <th scope="col">Oddział</th>
+                            <th scope="col">Zatrudniony od</th>
+                            <th scope="col">Zatrudniony do</th>
+                            <th scope="col">Informacje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in AllEmployees)
                         {
-                            <th scope="col">Obecnie</th>
-                        }else
-                        { 
-                            <th scope="row">@item.EmployedTo</th>
+                            <tr>
+                                <th scope="row">@item.FirstName</th>
+                                <th scope="row">@item.LastName</th>
+                                <th scope="row">@item.Address</th>
+                                <th scope="row">@item.IdentityUser.Email</th>
+                                <th scope="row">@item.IdentityUser.PhoneNumber</th>
+                                <th scope="row">@item.Department.Name</th>
+                                <th scope="row">@item.EmployedSince</th>
+                                @if (item.IsEmployed)
+                                {
+                                    <th scope="col">Obecnie</th>
+                                }
+                                else
+                                {
+                                    <th scope="row">@item.EmployedTo</th>
+                                }
+                                <th scope="row">@item.Informations</th>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
+                                </td>
+                            </tr>
                         }
-                        <th scope="row">@item.Informations</th>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OpenEditDialog(item.Id)">Edytuj</button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm" @onclick="() => OpenDeleteDialog(item.Id)">Usuń</button>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
+                    </tbody>
+                </table>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h5>Brak uprawnień do zarządzania pojazdami</h5>
+        </NotAuthorized>
+    </AuthorizeView>
+    
     @if (AddDialogOpen)
     {
         <AddEmployee OnClose="@OnAddDialogClose"></AddEmployee>
@@ -82,20 +92,29 @@ else
     private List<Employee> AllEmployees = new List<Employee>();
     private List<IdentityUser> AllUsers = new List<IdentityUser>();
     private List<Department> AllDepartments = new List<Department>();
+    private List<RolesAccess> AllRolesAccesses = new List<RolesAccess>();
 
     private Employee employee { get; set; }
+    private RolesAccess rolesAccess { get; set; }
     public bool AddDialogOpen { get; set; }
     public bool EditDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
     public string employeeId { get; set; }
+    public string rolesAccessString { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
+        AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
         AllEmployees = await Task.Run(() => employeeService.GetAllEmployeesAsync());
         AllDepartments = await Task.Run(() => departmentService.GetAllDepartmentsAsync());
         AllUsers = await Task.Run(() => userService.GetAllUsersAsync());
+
+        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Employees"));
+        rolesAccess = SiteRoleAccess.First();
+        rolesAccessString = rolesAccess.AccessString.ToString();
+
         StateHasChanged();
     }
 
