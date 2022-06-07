@@ -16,8 +16,9 @@
 }
 else
 {
-    <AuthorizeView Roles="@rolesAccessString">
-        <Authorized>
+    //Uncomment this part after add admin role to admim user
+    /*<AuthorizeView Roles="@rolesAccessString">
+        <Authorized>*/
             <div>
             <th scope="row">
                 <button class="btn btn-info" @onclick="() => OpenAddRoleDialog()">Dodaj rolę</button>
@@ -111,12 +112,13 @@ else
                     </table>
                 </div>
             </div>
-        </Authorized>
-        <NotAuthorized>
-            <h5>Brak uprawnień do zarządzania pojazdami</h5>
-        </NotAuthorized>
-    </AuthorizeView>
-    
+    //Uncomment this part after add admin role to admim user
+    /*</Authorized>
+    <NotAuthorized>
+        <h5>Brak uprawnień do zarządzania pojazdami</h5>
+    </NotAuthorized>
+</AuthorizeView>*/
+
     @if (AddRoleDialogOpen)
     {
         <AddRole OnClose="OnAddRoleDialogClose"></AddRole>
@@ -204,9 +206,10 @@ else
         AllUserRoles = await Task.Run(() => userRolesService.GetAllIdentityUserRolesAsync());
         AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
 
-        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Roles"));
+        //Uncomment this part after add admin role to admim user
+        /*var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Roles"));
         rolesAccess = SiteRoleAccess.First();
-        rolesAccessString = rolesAccess.AccessString.ToString();
+        rolesAccessString = rolesAccess.AccessString.ToString();*/
 
         StateHasChanged();
     }

@@ -17,6 +17,7 @@
 @inject CarService carService
 @inject EmployeeService employeeService
 @inject UserService userService
+@inject RolesService roleService
 @implements IDisposable
 
 <AuthorizeView>
@@ -346,6 +347,7 @@
     private List<Equipment> AllEquipments = new List<Equipment>();
     private List<Car> AllCars = new List<Car>();
     private List<Location> AllLocations = new List<Location>();
+    private List<IdentityRole> AllRoles = new List<IdentityRole>();
 
     public OfficeWork officeWork { get; set; }
     public Order order { get; set; }
@@ -382,6 +384,8 @@
         AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
         AllCars = await Task.Run(() => carService.GetAllCarsAsync());
         AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        AllRoles = await Task.Run(() => roleService.GetAllRolesAsync());
+
 
         //Get login employee id
         identityUserName = httpContextAccessor.HttpContext.User.Identity.Name;
@@ -391,8 +395,9 @@
             var idUser = AllIdentityUsers.Where(x => (x.UserName).Contains(identityUserName));
             identityUser = idUser.First();
             employee = await Task.Run(() => employeeService.GetEmployeeByUserAsync(identityUser));
-            employeeId = employee.Id;
 
+            if(employee is object)
+            employeeId = employee.Id;
 
             //Get orders and officeworks for login employee
             var EmployeeOrders = AllOrders.Where(x => ((x.FirstEmployee.Id).Equals(employeeId)));

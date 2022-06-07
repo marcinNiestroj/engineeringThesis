@@ -139,7 +139,7 @@ using Microsoft.AspNetCore.Http;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 333 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+#line 334 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
       
     private List<OfficeWork> AllOfficeWorks = new List<OfficeWork>();
     private List<OfficeWork> UsersYesterdayOfficeWorks = new List<OfficeWork>();
@@ -156,6 +156,7 @@ using Microsoft.AspNetCore.Http;
     private List<Equipment> AllEquipments = new List<Equipment>();
     private List<Car> AllCars = new List<Car>();
     private List<Location> AllLocations = new List<Location>();
+    private List<IdentityRole> AllRoles = new List<IdentityRole>();
 
     public OfficeWork officeWork { get; set; }
     public Order order { get; set; }
@@ -192,6 +193,8 @@ using Microsoft.AspNetCore.Http;
         AllEquipments = await Task.Run(() => equipmentService.GetAllEquipmentAsync());
         AllCars = await Task.Run(() => carService.GetAllCarsAsync());
         AllLocations = await Task.Run(() => locationService.GetAllLocationsAsync());
+        AllRoles = await Task.Run(() => roleService.GetAllRolesAsync());
+
 
         //Get login employee id
         identityUserName = httpContextAccessor.HttpContext.User.Identity.Name;
@@ -202,14 +205,15 @@ using Microsoft.AspNetCore.Http;
 #line hidden
 #nullable disable
 #nullable restore
-#line 389 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+#line 393 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
          if (identityUserName is not null)
         {
             var idUser = AllIdentityUsers.Where(x => (x.UserName).Contains(identityUserName));
             identityUser = idUser.First();
             employee = await Task.Run(() => employeeService.GetEmployeeByUserAsync(identityUser));
-            employeeId = employee.Id;
 
+            if(employee is object)
+            employeeId = employee.Id;
 
             //Get orders and officeworks for login employee
             var EmployeeOrders = AllOrders.Where(x => ((x.FirstEmployee.Id).Equals(employeeId)));
@@ -235,7 +239,7 @@ using Microsoft.AspNetCore.Http;
 #line hidden
 #nullable disable
 #nullable restore
-#line 415 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
+#line 420 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Index.razor"
          
 
         timer = new Timer(Tick, null, 0, 1000);
@@ -326,6 +330,7 @@ using Microsoft.AspNetCore.Http;
 #line default
 #line hidden
 #nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private RolesService roleService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private UserService userService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private EmployeeService employeeService { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private CarService carService { get; set; }

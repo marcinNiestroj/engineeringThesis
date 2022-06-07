@@ -118,7 +118,7 @@ using Microsoft.AspNetCore.Identity;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 166 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
+#line 168 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Pages\Roles\Roles.razor"
        
     //Roles
     private List<IdentityRole> AllRoles = new List<IdentityRole>();
@@ -160,9 +160,10 @@ using Microsoft.AspNetCore.Identity;
         AllUserRoles = await Task.Run(() => userRolesService.GetAllIdentityUserRolesAsync());
         AllRolesAccesses = await Task.Run(() => rolesAccessService.GetAllRolesAccessesAsync());
 
-        var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Roles"));
+        //Uncomment this part after add admin role to admim user
+        /*var SiteRoleAccess = AllRolesAccesses.Where(x => (x.UrlAddress.ToString()).Contains("/Roles"));
         rolesAccess = SiteRoleAccess.First();
-        rolesAccessString = rolesAccess.AccessString.ToString();
+        rolesAccessString = rolesAccess.AccessString.ToString();*/
 
         StateHasChanged();
     }
