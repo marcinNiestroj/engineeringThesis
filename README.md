@@ -1,4 +1,4 @@
-# Project Name
+# ProjektInzynierskiBlazor - GeoOffice
 > My Engineering Thesis project. 
 
 ## Table of Contents
