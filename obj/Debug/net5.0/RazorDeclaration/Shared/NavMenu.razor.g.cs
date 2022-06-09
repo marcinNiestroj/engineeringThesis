@@ -90,7 +90,7 @@ using ProjektInzynierskiBlazor.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 81 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Shared\NavMenu.razor"
+#line 82 "C:\Users\Marcin\source\repos\ProjektInzynierski\ProjektInzynierskiBlazor\Shared\NavMenu.razor"
        
     public string carsAccessString { get; set; }
     public string locationsAccessString { get; set; }
